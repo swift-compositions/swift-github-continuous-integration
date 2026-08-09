@@ -1,0 +1,36 @@
+# SYNTHETIC TEST FIXTURE — not the Institute organization manifest.
+#
+# The canonical organization manifest has exactly one owner:
+# swift-institute/.github at `.github/actions/read-orgs/orgs.yaml` (the
+# read-orgs composite's manifest). This package is ecosystem-generic and
+# must not carry a second live copy of that list — a copy can diverge,
+# and Institute-specific data does not belong here. Consumers pass their
+# own manifest via the read-orgs composite's `manifest-repository` /
+# `manifest-path` inputs, or `--orgs-file` / `organizationsFile` on the
+# validators.
+#
+# This file exists only so the packaged tests can exercise the manifest
+# schema, including the archived-status exclusion path. The names below
+# are invented.
+#
+# Schema (matches the canonical manifest):
+#   - name:   GitHub org slug (kebab-case)
+#     layer:  Architectural layer assignment (L1 | L2 | L3 | meta)
+#     status: active | archived  (default active; archived orgs are
+#             filtered out by default)
+
+- name: example-organization-one
+  layer: L1
+  status: active
+
+- name: example-organization-two
+  layer: L2
+  status: active
+
+- name: example-organization-meta
+  layer: meta
+  status: active
+
+- name: example-organization-archived
+  layer: L3
+  status: archived
