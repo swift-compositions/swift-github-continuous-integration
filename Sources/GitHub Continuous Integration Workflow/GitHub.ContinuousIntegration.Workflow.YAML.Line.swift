@@ -1,3 +1,4 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
 
@@ -31,10 +32,27 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
         }
 
         static func scan(_ text: String) -> [Self] {
-            text.split(separator: "\n", omittingEmptySubsequences: false)
+            // Normalise line endings *before* splitting. Swift's `Character`
+            // is an extended grapheme cluster, and CR+LF is itself one
+            // grapheme cluster — so `text.split(separator: "\n")` on a
+            // CRLF document matches nothing and the entire document
+            // collapses into a single "line". This is not
+            // platform-conditional code reading a platform fact; it is a
+            // Unicode-model fact that fires identically on every OS
+            // whenever the *input bytes* happen to be CRLF, which in
+            // practice means every Windows `git checkout` of an
+            // LF-committed workflow file (default `core.autocrlf`).
+            // Normalizing first (CRLF, then any bare CR) removes both the
+            // collapse and the per-line trailing-`\r` case entirely, so
+            // there is nothing left for `raw`/`content` to strip.
+            let normalized =
+                text
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+            return normalized.split(separator: "\n", omittingEmptySubsequences: false)
                 .enumerated()
                 .map { offset, raw in
-                    let raw = raw.hasSuffix("\r") ? String(raw.dropLast()) : String(raw)
+                    let raw = String(raw)
                     return Self(
                         number: offset + 1,
                         indent: raw.prefix(while: { $0 == " " }).count,

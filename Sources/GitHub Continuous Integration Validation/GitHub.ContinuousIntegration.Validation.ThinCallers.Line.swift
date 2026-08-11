@@ -1,3 +1,4 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
 
@@ -30,8 +31,22 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
         public init(_ text: String) { self.text = text }
 
         /// Every line of a workflow, in order.
+        ///
+        /// Normalizes CRLF (and bare CR) to LF before splitting. `text`
+        /// arrives here as the raw, unparsed file — unlike the typed
+        /// `YAML.Document` reader, nothing upstream has already
+        /// normalized it. Swift's `Character` is an extended grapheme
+        /// cluster and CR+LF is itself one, so splitting on `"\n"` alone
+        /// silently matches nothing on CRLF input and the whole file
+        /// collapses into a single pseudo-line (the same defect class
+        /// fixed in `YAML.Line.scan`; see that type's doc comment).
         public static func all(_ text: String) -> [Line] {
-            text.split(separator: "\n", omittingEmptySubsequences: false).map { Line(String($0)) }
+            let normalized =
+                text
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+            return normalized.split(separator: "\n", omittingEmptySubsequences: false)
+                .map { Line(String($0)) }
         }
 
         public var indent: Int { text.prefix { $0 == " " || $0 == "\t" }.count }
