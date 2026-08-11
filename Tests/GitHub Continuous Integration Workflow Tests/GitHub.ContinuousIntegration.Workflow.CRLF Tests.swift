@@ -42,8 +42,10 @@ struct CIWorkflowCRLFTests {
         let lf = Self.caller
         let crlf = lf.replacingOccurrences(of: "\n", with: "\r\n")
 
-        let lfDocument = try GitHub.ContinuousIntegration.Workflow.Document(name: "ci.yml", text: lf)
-        let crlfDocument = try GitHub.ContinuousIntegration.Workflow.Document(name: "ci.yml", text: crlf)
+        let lfDocument = try GitHub.ContinuousIntegration.Workflow.Document(
+            name: "ci.yml", text: lf)
+        let crlfDocument = try GitHub.ContinuousIntegration.Workflow.Document(
+            name: "ci.yml", text: crlf)
 
         #expect(crlfDocument.jobs.map(\.name) == lfDocument.jobs.map(\.name))
         #expect(crlfDocument.jobs.map(\.name) == ["ci", "lint"])
@@ -53,7 +55,8 @@ struct CIWorkflowCRLFTests {
         let lf = Self.caller
         let cr = lf.replacingOccurrences(of: "\n", with: "\r")
 
-        let document = try GitHub.ContinuousIntegration.Workflow.Document(name: "ci.yml", text: cr)
+        let document = try GitHub.ContinuousIntegration.Workflow.Document(
+            name: "ci.yml", text: cr)
         #expect(document.jobs.map(\.name) == ["ci", "lint"])
     }
 }

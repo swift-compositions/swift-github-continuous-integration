@@ -45,7 +45,8 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
             // Normalizing first (CRLF, then any bare CR) removes both the
             // collapse and the per-line trailing-`\r` case entirely, so
             // there is nothing left for `raw`/`content` to strip.
-            let normalized = text
+            let normalized =
+                text
                 .replacingOccurrences(of: "\r\n", with: "\n")
                 .replacingOccurrences(of: "\r", with: "\n")
             return normalized.split(separator: "\n", omittingEmptySubsequences: false)
