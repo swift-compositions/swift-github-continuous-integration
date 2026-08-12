@@ -341,15 +341,13 @@ struct CIValidationPinnedActionSchemaTests {
         }
     }
 
-    @Suite
-    struct `Real Tree` {
-        @Test func `every committed call site corresponds to its pinned action's declared schema`() throws {
-            // The mandatory self-firing sweep: this must report ZERO
-            // findings at head. A future change that reverts the fix, or
-            // introduces a new mismatched call site, turns this red.
-            let findings = try GitHub.ContinuousIntegration.Validation.PinnedActionSchema()
-                .findings(in: RepositoryUnderTest.subject)
-            #expect(findings.filter { $0.rule == "CI-118" }.isEmpty)
-        }
-    }
+    // The mandatory self-firing sweep over a real checkout does NOT live
+    // here. Its subject is a repository that actually carries
+    // self-referential composite-action call sites — the Institute control
+    // plane — and this package carries none, so the sweep would report
+    // zero over an empty population: coverage in appearance only, which is
+    // exactly the failure mode `[CI-118]` was written to catch. It lives
+    // with the other shipped-bytes controls, in
+    // institute-continuous-integration's embedded-shell target, which
+    // names its subject explicitly and declines when it has none.
 }
