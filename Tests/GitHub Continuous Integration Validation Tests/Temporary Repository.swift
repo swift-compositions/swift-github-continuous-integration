@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
 @testable import GitHub_Continuous_Integration_Validation
 
@@ -14,9 +14,10 @@ enum RepositoryUnderTest {
     /// `<package root>/.github/actions/read-orgs/orgs.yaml`.
     static let organizationsFile: String = {
         guard
-            let path = GitHub.ContinuousIntegration.Validation.BranchPins.Organizations.locateManifest(
-                startingAt: (#filePath as NSString).deletingLastPathComponent
-            )
+            let path = GitHub.ContinuousIntegration.Validation.BranchPins.Organizations
+                .locateManifest(
+                    startingAt: (#filePath as NSString).deletingLastPathComponent
+                )
         else { fatalError("orgs manifest not found above \(#filePath)") }
         return path
     }()

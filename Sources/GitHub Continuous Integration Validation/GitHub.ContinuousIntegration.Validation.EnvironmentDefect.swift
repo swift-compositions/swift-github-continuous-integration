@@ -31,8 +31,10 @@ extension GitHub.ContinuousIntegration.Validation {
             switch self {
             case .unreadableSubject(let root):
                 "subject root is not a readable directory: \(root)"
+
             case .unreadableFile(let path):
                 "file could not be read: \(path)"
+
             case .missingSupportFile(let path):
                 "required support file is missing: \(path)"
             }

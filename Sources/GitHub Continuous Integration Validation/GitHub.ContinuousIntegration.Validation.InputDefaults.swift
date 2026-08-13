@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-058]` — a reusable that declares `enable-private-repos` must
@@ -42,10 +42,14 @@ extension GitHub.ContinuousIntegration.Validation {
                 guard declared != .boolean(true) else { continue }
                 findings.append(
                     Finding(
-                        repository: subject.repository, rule: rule,
+                        repository: subject.repository,
+                        rule: rule,
                         message: Self.message(
                             document: document.name,
-                            declared: declared?.pythonRepr ?? "None")))
+                            declared: declared?.pythonRepr ?? "None"
+                        )
+                    )
+                )
             }
             return findings
         }

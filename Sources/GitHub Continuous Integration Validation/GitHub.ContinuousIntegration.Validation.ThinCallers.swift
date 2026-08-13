@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[GH-REPO-074]`, `[CI-030]`, `[CI-059]`, and
@@ -108,7 +108,8 @@ extension GitHub.ContinuousIntegration.Validation {
                 repository: "swift-institute-test/swift-exempt-explicit-caller",
                 path: ".github/workflows/ci.yml",
                 admits: .sameOrganizationExplicit,
-                ruling: "fixture-scoped mechanism control; not a production ruling")
+                ruling: "fixture-scoped mechanism control; not a production ruling"
+            )
         ]
 
         struct Exemption {
@@ -131,7 +132,8 @@ extension GitHub.ContinuousIntegration.Validation {
         }
 
         static func findings(
-            in text: String, subject: Subject
+            in text: String,
+            subject: Subject
         ) throws(EnvironmentDefect) -> [Finding] {
             // File-level carve-out for every rule here: a workflow that
             // declares `workflow_call:` *is* a reusable. Tool-host
@@ -144,20 +146,37 @@ extension GitHub.ContinuousIntegration.Validation {
 
             if Line.all(text).contains(where: \.isInlineRunsOn), !supersedes {
                 findings.append(
-                    Finding(repository: repository, rule: "GH-REPO-074", message: Message.inlineRunsOn))
+                    Finding(
+                        repository: repository,
+                        rule: "GH-REPO-074",
+                        message: Message.inlineRunsOn
+                    )
+                )
             }
             if Line.all(text).contains(where: \.isInlineSteps), !supersedes {
                 findings.append(
-                    Finding(repository: repository, rule: "GH-REPO-074", message: Message.inlineSteps))
+                    Finding(
+                        repository: repository,
+                        rule: "GH-REPO-074",
+                        message: Message.inlineSteps
+                    )
+                )
             }
             if !Line.all(text).contains(where: \.isJobUses) {
                 findings.append(
-                    Finding(repository: repository, rule: "GH-REPO-074", message: Message.noReusable))
+                    Finding(
+                        repository: repository,
+                        rule: "GH-REPO-074",
+                        message: Message.noReusable
+                    )
+                )
             }
             findings += pinFindings(in: text, repository: repository)
             findings += secretFindings(
-                in: text, repository: repository,
-                organization: try hostingOrganization(of: subject))
+                in: text,
+                repository: repository,
+                organization: try hostingOrganization(of: subject)
+            )
             findings += integratedDocsFindings(in: text, repository: repository)
             return findings
         }
@@ -192,8 +211,11 @@ extension GitHub.ContinuousIntegration.Validation {
                 guard try subject.text(at: ".github/workflows/\(name)") != nil else { continue }
                 findings.append(
                     Finding(
-                        repository: subject.repository, rule: "GH-REPO-074",
-                        message: Message.standaloneWorkflow(name)))
+                        repository: subject.repository,
+                        rule: "GH-REPO-074",
+                        message: Message.standaloneWorkflow(name)
+                    )
+                )
             }
             return findings
         }
@@ -220,10 +242,12 @@ extension GitHub.ContinuousIntegration.Validation {
             guard !jobs.contains(where: { $0.lines.contains(where: \.isDirectJobUses) }) else {
                 return false
             }
-            guard jobs.allSatisfy({ job in
-                job.lines.contains(where: \.isDirectJobRunsOn)
-                    && job.lines.contains(where: \.isDirectJobSteps)
-            }) else { return false }
+            guard
+                jobs.allSatisfy({ job in
+                    job.lines.contains(where: \.isDirectJobRunsOn)
+                        && job.lines.contains(where: \.isDirectJobSteps)
+                })
+            else { return false }
 
             let directRunsOn = jobs.reduce(0) { $0 + $1.lines.count(where: \.isDirectJobRunsOn) }
             let directSteps = jobs.reduce(0) { $0 + $1.lines.count(where: \.isDirectJobSteps) }
@@ -267,7 +291,10 @@ extension GitHub.ContinuousIntegration.Validation {
         static func readerAgrees(_ text: String, jobs: [Job]) -> Bool {
             let document: GitHub.ContinuousIntegration.Workflow.Document
             do throws(GitHub.ContinuousIntegration.Workflow.YAML.Error) {
-                document = try GitHub.ContinuousIntegration.Workflow.Document(name: "ci.yml", text: text)
+                document = try GitHub.ContinuousIntegration.Workflow.Document(
+                    name: "ci.yml",
+                    text: text
+                )
             } catch {
                 // A document the reader refuses proves nothing, and this
                 // is the one predicate here that must fail closed: the
@@ -290,15 +317,19 @@ extension GitHub.ContinuousIntegration.Validation {
                 guard let reference = line.intraInstituteReference, reference.ref != "main"
                 else { return nil }
                 return Finding(
-                    repository: repository, rule: "CI-030",
-                    message: Message.unpinnedReference(reference))
+                    repository: repository,
+                    rule: "CI-030",
+                    message: Message.unpinnedReference(reference)
+                )
             }
         }
 
         // MARK: - [CI-059]
 
         static func secretFindings(
-            in text: String, repository: String, organization: String
+            in text: String,
+            repository: String,
+            organization: String
         ) -> [Finding] {
             let crossOrganization = subOrganizations.contains(organization)
             return jobs(in: text).flatMap { job -> [Finding] in
@@ -320,7 +351,8 @@ extension GitHub.ContinuousIntegration.Validation {
                     repository: repository,
                     message: explicit
                         ? Message.sameOrganizationExplicit(job: job.name)
-                        : Message.sameOrganizationOmitted(job: job.name))
+                        : Message.sameOrganizationOmitted(job: job.name)
+                )
             ]
         }
 
@@ -328,15 +360,19 @@ extension GitHub.ContinuousIntegration.Validation {
             if job.lines.contains(where: \.isSecretsInherit) {
                 return [
                     classified(
-                        .crossOrganizationInherit, repository: repository,
-                        message: Message.crossOrganizationInherit(job: job.name))
+                        .crossOrganizationInherit,
+                        repository: repository,
+                        message: Message.crossOrganizationInherit(job: job.name)
+                    )
                 ]
             }
             guard job.lines.contains(where: { $0.isSecretsBlock || $0.isSecretsInlineMap }) else {
                 return [
                     classified(
-                        .crossOrganizationOmitted, repository: repository,
-                        message: Message.crossOrganizationOmitted(job: job.name))
+                        .crossOrganizationOmitted,
+                        repository: repository,
+                        message: Message.crossOrganizationOmitted(job: job.name)
+                    )
                 ]
             }
             var findings: [Finding] = []
@@ -346,15 +382,21 @@ extension GitHub.ContinuousIntegration.Validation {
             if !missing.isEmpty {
                 findings.append(
                     classified(
-                        .crossOrganizationMissingNames, repository: repository,
-                        message: Message.crossOrganizationMissing(job: job.name, names: missing)))
+                        .crossOrganizationMissingNames,
+                        repository: repository,
+                        message: Message.crossOrganizationMissing(job: job.name, names: missing)
+                    )
+                )
             }
             let extra = job.forwardedSecretNames.filter { !crossOrganizationSecrets.contains($0) }
             if !extra.isEmpty {
                 findings.append(
                     classified(
-                        .crossOrganizationExtraNames, repository: repository,
-                        message: Message.crossOrganizationExtra(job: job.name, names: extra)))
+                        .crossOrganizationExtraNames,
+                        repository: repository,
+                        message: Message.crossOrganizationExtra(job: job.name, names: extra)
+                    )
+                )
             }
             return findings
         }
@@ -366,20 +408,28 @@ extension GitHub.ContinuousIntegration.Validation {
         /// identifier it is reported under, so the finding stays legible
         /// while the aggregation layer stops counting it.
         static func classified(
-            _ findingClass: FindingClass, repository: String, message: String
+            _ findingClass: FindingClass,
+            repository: String,
+            message: String
         ) -> Finding {
-            guard let exemption = exemptions.first(where: {
-                $0.repository == repository && $0.path == ".github/workflows/ci.yml"
-                    && $0.admits == findingClass
-            }) else {
+            guard
+                let exemption = exemptions.first(where: {
+                    $0.repository == repository && $0.path == ".github/workflows/ci.yml"
+                        && $0.admits == findingClass
+                })
+            else {
                 return Finding(
-                    repository: repository, rule: "CI-059",
-                    message: "[\(findingClass.rawValue)] \(message)")
+                    repository: repository,
+                    rule: "CI-059",
+                    message: "[\(findingClass.rawValue)] \(message)"
+                )
             }
             return Finding(
-                repository: repository, rule: exemptRule,
+                repository: repository,
+                rule: exemptRule,
                 message: "[\(findingClass.rawValue)] admitted by typed exemption "
-                    + "(\(exemption.ruling)): \(message)")
+                    + "(\(exemption.ruling)): \(message)"
+            )
         }
 
         // MARK: - INTEGRATED-DOCS-ADMISSION
@@ -390,8 +440,10 @@ extension GitHub.ContinuousIntegration.Validation {
                     let value = job.withBlockValue("integrated-docs")
                 else { return nil }
                 return Finding(
-                    repository: repository, rule: "INTEGRATED-DOCS-ADMISSION",
-                    message: Message.integratedDocs(value))
+                    repository: repository,
+                    rule: "INTEGRATED-DOCS-ADMISSION",
+                    message: Message.integratedDocs(value)
+                )
             }
         }
     }

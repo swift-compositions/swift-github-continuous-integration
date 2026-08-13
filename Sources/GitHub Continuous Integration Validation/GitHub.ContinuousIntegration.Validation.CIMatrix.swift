@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-010]` the universal CI matrix's shape, and `[CI-099]` the
@@ -57,8 +57,9 @@ extension GitHub.ContinuousIntegration.Validation {
 
             // A test subject is in scope so the fixture corpus needs no
             // marker file; production reaches only the canonical repo.
-            guard subject.repository == Self.canonicalRepository
-                || subject.repository.contains("-test/")
+            guard
+                subject.repository == Self.canonicalRepository
+                    || subject.repository.contains("-test/")
             else { return [] }
 
             guard let text = try subject.text(at: ".github/workflows/swift-ci.yml") else {
@@ -66,49 +67,64 @@ extension GitHub.ContinuousIntegration.Validation {
             }
             let document: GitHub.ContinuousIntegration.Workflow.Document
             do {
-                document = try GitHub.ContinuousIntegration.Workflow.Document(name: "swift-ci.yml", text: text)
+                document = try GitHub.ContinuousIntegration.Workflow.Document(
+                    name: "swift-ci.yml",
+                    text: text
+                )
             } catch {
                 return [
                     Finding(
-                        repository: subject.repository, rule: shape,
-                        message: "YAML parse failed: \(error.message)")
+                        repository: subject.repository,
+                        rule: shape,
+                        message: "YAML parse failed: \(error.message)"
+                    )
                 ]
             }
             guard document.body != nil else {
                 return [
                     Finding(
-                        repository: subject.repository, rule: shape,
-                        message: "workflow YAML root is not a mapping")
+                        repository: subject.repository,
+                        rule: shape,
+                        message: "workflow YAML root is not a mapping"
+                    )
                 ]
             }
             guard let jobs = document.body?["jobs"]?.mapping else {
                 return [
                     Finding(
-                        repository: subject.repository, rule: shape,
-                        message: "workflow has no jobs: block")
+                        repository: subject.repository,
+                        rule: shape,
+                        message: "workflow has no jobs: block"
+                    )
                 ]
             }
 
             var findings: [Finding] = []
             func report(_ rule: Rule, _ message: String) {
                 findings.append(
-                    Finding(repository: subject.repository, rule: rule, message: message))
+                    Finding(repository: subject.repository, rule: rule, message: message)
+                )
             }
             /// A job's body, or `nil` when the entry is absent or is not
             /// a mapping. A malformed entry is not a present job.
-            func job(_ name: String) -> GitHub.ContinuousIntegration.Workflow.YAML.Mapping? { jobs[name]?.mapping }
+            func job(_ name: String) -> GitHub.ContinuousIntegration.Workflow.YAML.Mapping? {
+                jobs[name]?.mapping
+            }
 
             for required in Self.requiredJobs where jobs[required.name] == nil {
                 report(
                     shape,
                     "required matrix job \(required.name.pythonQuoted) missing from "
-                        + "jobs: block per [CI-010]")
+                        + "jobs: block per [CI-010]"
+                )
             }
             for required in Self.requiredJobs {
                 guard let body = job(required.name) else { continue }
                 if let finding = Self.runnerFinding(
-                    job: required.name, body: body, expecting: required.runner)
-                {
+                    job: required.name,
+                    body: body,
+                    expecting: required.runner
+                ) {
                     report(shape, finding)
                 }
             }
@@ -116,7 +132,7 @@ extension GitHub.ContinuousIntegration.Validation {
                 report(shape, Self.nightlyMessage)
             }
             if let windows = job("windows-release"),
-               windows["continue-on-error"]?.boolean == true
+                windows["continue-on-error"]?.boolean == true
             {
                 report(posture, Self.windowsMessage)
             }
@@ -125,8 +141,10 @@ extension GitHub.ContinuousIntegration.Validation {
                 return findings
             }
             if let finding = Self.runnerFinding(
-                job: "apple-simulator-build", body: apple, expecting: "macos")
-            {
+                job: "apple-simulator-build",
+                body: apple,
+                expecting: "macos"
+            ) {
                 report(shape, finding)
             }
             if apple["continue-on-error"]?.boolean != true {
@@ -148,7 +166,9 @@ extension GitHub.ContinuousIntegration.Validation {
         /// that the rule deliberately does not pin — pinning it here
         /// would make a runner-image bump read as a matrix defect.
         static func runnerFinding(
-            job: String, body: GitHub.ContinuousIntegration.Workflow.YAML.Mapping, expecting runner: String
+            job: String,
+            body: GitHub.ContinuousIntegration.Workflow.YAML.Mapping,
+            expecting runner: String
         ) -> String? {
             let declared = body["runs-on"].map(\.pythonText) ?? ""
             guard !declared.lowercased().contains(runner) else { return nil }
@@ -216,8 +236,10 @@ extension GitHub.ContinuousIntegration.Workflow.YAML.Node {
         case .integer(let value): String(value)
         case .number(let value): String(value)
         case .text(let value): value
+
         case .sequence(let elements):
             "[" + elements.map(\.pythonRepresentation).joined(separator: ", ") + "]"
+
         case .mapping(let mapping):
             "{"
                 + mapping.entries

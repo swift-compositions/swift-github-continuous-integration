@@ -21,7 +21,10 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
             let node = try value(on: line)
             skipSpaces()
             guard index == characters.count else {
-                throw Error.unsupported(line: line, construct: "trailing text after a flow collection")
+                throw Error.unsupported(
+                    line: line,
+                    construct: "trailing text after a flow collection"
+                )
             }
             return node
         }
@@ -42,13 +45,20 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
             index += 1
             var elements: [Node] = []
             skipSpaces()
-            if peek() == "]" { index += 1; return .sequence(elements) }
+            if peek() == "]" {
+                index += 1
+                return .sequence(elements)
+            }
             while true {
                 elements.append(try value(on: line))
                 skipSpaces()
                 switch peek() {
                 case ",": index += 1
-                case "]": index += 1; return .sequence(elements)
+
+                case "]":
+                    index += 1
+                    return .sequence(elements)
+
                 default:
                     throw Error.unsupported(line: line, construct: "an unterminated flow sequence")
                 }
@@ -59,19 +69,29 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
             index += 1
             var entries: [Mapping.Entry] = []
             skipSpaces()
-            if peek() == "}" { index += 1; return .mapping(Mapping(entries)) }
+            if peek() == "}" {
+                index += 1
+                return .mapping(Mapping(entries))
+            }
             while true {
                 let key = try value(on: line)
                 skipSpaces()
                 guard peek() == ":" else {
-                    throw Error.unsupported(line: line, construct: "a flow mapping entry without a value")
+                    throw Error.unsupported(
+                        line: line,
+                        construct: "a flow mapping entry without a value"
+                    )
                 }
                 index += 1
                 entries.append((key, try value(on: line)))
                 skipSpaces()
                 switch peek() {
                 case ",": index += 1
-                case "}": index += 1; return .mapping(Mapping(entries))
+
+                case "}":
+                    index += 1
+                    return .mapping(Mapping(entries))
+
                 default:
                     throw Error.unsupported(line: line, construct: "an unterminated flow mapping")
                 }

@@ -84,7 +84,8 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers.Job {
             if let indent = openerIndent {
                 if line.isBlankOrComment { continue }
                 if line.indent > indent {
-                    if let value = line.value(after: "\(key):"), !value.beforeComment.trimmed.isEmpty
+                    if let value = line.value(after: "\(key):"),
+                        !value.beforeComment.trimmed.isEmpty
                     {
                         return value.beforeComment.trimmed
                     }

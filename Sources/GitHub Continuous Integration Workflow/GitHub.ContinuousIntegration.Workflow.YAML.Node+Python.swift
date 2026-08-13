@@ -31,8 +31,10 @@ extension GitHub.ContinuousIntegration.Workflow.YAML.Node {
         case .integer(let value): "\(value)"
         case .number(let value): "\(value)"
         case .text(let value): Self.repr(value)
+
         case .sequence(let elements):
             "[" + elements.map(\.pythonRepr).joined(separator: ", ") + "]"
+
         case .mapping(let mapping):
             "{"
                 + mapping.entries
@@ -56,10 +58,13 @@ extension GitHub.ContinuousIntegration.Workflow.YAML.Node {
             case "\n": result += #"\n"#
             case "\r": result += #"\r"#
             case "\t": result += #"\t"#
+
             case Unicode.Scalar(String(quote).unicodeScalars.first!):
                 result += "\\\(quote)"
+
             case let scalar where scalar.value < 0x20 || scalar.value == 0x7F:
                 result += "\\x" + Self.hexadecimal(scalar.value)
+
             default: result.unicodeScalars.append(scalar)
             }
         }

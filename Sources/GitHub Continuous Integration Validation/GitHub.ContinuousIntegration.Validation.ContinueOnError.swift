@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-105]` — `continue-on-error: true` must not sit at job level on
@@ -41,8 +41,11 @@ extension GitHub.ContinuousIntegration.Validation {
                     guard Self.declaresTruthyContinueOnError(job) else { continue }
                     findings.append(
                         Finding(
-                            repository: subject.repository, rule: rule,
-                            message: Self.message(document: document.name, job: job.name)))
+                            repository: subject.repository,
+                            rule: rule,
+                            message: Self.message(document: document.name, job: job.name)
+                        )
+                    )
                 }
             }
             return findings
@@ -56,7 +59,9 @@ extension GitHub.ContinuousIntegration.Validation {
         /// context (`${{ env.X }}`) reaches the document as text; reading
         /// `"true"` as truthy is the conservative choice the retired
         /// validator made and the corpus encodes.
-        static func declaresTruthyContinueOnError(_ job: GitHub.ContinuousIntegration.Workflow.Job) -> Bool {
+        static func declaresTruthyContinueOnError(
+            _ job: GitHub.ContinuousIntegration.Workflow.Job
+        ) -> Bool {
             switch job.continueOnError {
             case .boolean(let value): value
             case .text(let value): value.lowercased() == "true"

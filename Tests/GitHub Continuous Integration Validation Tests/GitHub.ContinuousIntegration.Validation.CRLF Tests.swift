@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 import Testing
 
 @testable import GitHub_Continuous_Integration_Validation
@@ -44,13 +44,17 @@ struct CIValidationCRLFTests {
         let source = testDirectory.appendingPathComponent("Fixtures")
 
         let destination = testDirectory.appendingPathComponent(
-            "Fixtures-CRLF-\(UUID().uuidString)")
+            "Fixtures-CRLF-\(UUID().uuidString)"
+        )
         try FileManager.default.copyItem(at: source, to: destination)
 
         let enumerator = FileManager.default.enumerator(
-            at: destination, includingPropertiesForKeys: [.isRegularFileKey])
+            at: destination,
+            includingPropertiesForKeys: [.isRegularFileKey]
+        )
         while let url = enumerator?.nextObject() as? URL {
-            let isRegular = try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile ?? false
+            let isRegular =
+                try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile ?? false
             guard isRegular else { continue }
             let ext = url.pathExtension
             guard ext == "swift" || ext == "yml" || ext == "yaml" else { continue }
@@ -63,7 +67,8 @@ struct CIValidationCRLFTests {
         return destination
     }
 
-    @Test func `the CRLF-converted corpus satisfies every scenario, matching the LF original`() throws
+    @Test func `the CRLF-converted corpus satisfies every scenario, matching the LF original`()
+        throws
     {
         let destination = try Self.makeCRLFCorpusDirectory()
         defer { try? FileManager.default.removeItem(at: destination) }
@@ -83,7 +88,9 @@ struct CIValidationCRLFTests {
         #expect(!violating.isEmpty)
         for outcome in violating {
             #expect(
-                !outcome.findings.isEmpty, "\(outcome.rule) \(outcome.scenario.name)")
+                !outcome.findings.isEmpty,
+                "\(outcome.rule) \(outcome.scenario.name)"
+            )
         }
     }
 }

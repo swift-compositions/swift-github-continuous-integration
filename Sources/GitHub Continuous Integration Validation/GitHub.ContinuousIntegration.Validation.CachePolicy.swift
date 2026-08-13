@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-040]` no `.build/` cache, and `[CI-042]` no `restore-keys`.
@@ -43,8 +43,11 @@ extension GitHub.ContinuousIntegration.Validation {
                     for step in job.steps where Self.invokesCache(step) {
                         guard let with = step["with"]?.mapping else { continue }
                         findings += Self.findings(
-                            in: with, repository: subject.repository,
-                            document: document.name, job: job.name)
+                            in: with,
+                            repository: subject.repository,
+                            document: document.name,
+                            job: job.name
+                        )
                     }
                 }
             }
@@ -52,32 +55,46 @@ extension GitHub.ContinuousIntegration.Validation {
         }
 
         /// Whether the step invokes `actions/cache`, at any version.
-        static func invokesCache(_ step: GitHub.ContinuousIntegration.Workflow.YAML.Mapping) -> Bool {
+        static func invokesCache(_ step: GitHub.ContinuousIntegration.Workflow.YAML.Mapping) -> Bool
+        {
             (step["uses"]?.pythonString ?? "").hasPrefix("actions/cache")
         }
 
         /// The violations one cache step's `with:` block carries. A step
         /// can carry both.
         static func findings(
-            in with: GitHub.ContinuousIntegration.Workflow.YAML.Mapping, repository: String, document: String, job: String
+            in with: GitHub.ContinuousIntegration.Workflow.YAML.Mapping,
+            repository: String,
+            document: String,
+            job: String
         ) -> [Finding] {
             var findings: [Finding] = []
             if let path = with["path"]?.text, Self.namesBuildDirectory(path) {
                 findings.append(
                     Finding(
-                        repository: repository, rule: "CI-040",
+                        repository: repository,
+                        rule: "CI-040",
                         message: Self.buildCacheMessage(
-                            document: document, job: job,
-                            path: GitHub.ContinuousIntegration.Workflow.YAML.Node.repr(path))))
+                            document: document,
+                            job: job,
+                            path: GitHub.ContinuousIntegration.Workflow.YAML.Node.repr(path)
+                        )
+                    )
+                )
             }
             if let keys = with["restore-keys"] {
                 let preview = Self.preview(of: keys.pythonString)
                 findings.append(
                     Finding(
-                        repository: repository, rule: "CI-042",
+                        repository: repository,
+                        rule: "CI-042",
                         message: Self.restoreKeysMessage(
-                            document: document, job: job,
-                            preview: GitHub.ContinuousIntegration.Workflow.YAML.Node.repr(preview))))
+                            document: document,
+                            job: job,
+                            preview: GitHub.ContinuousIntegration.Workflow.YAML.Node.repr(preview)
+                        )
+                    )
+                )
             }
             return findings
         }

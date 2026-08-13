@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 import Testing
 
 @testable import GitHub_Continuous_Integration_Validation
@@ -31,15 +31,26 @@ struct CIValidationC1bTests {
     @Suite
     struct Registration {
         @Test func `every C1b rule resolves to its validator`() {
-            #expect(GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-010") is GitHub.ContinuousIntegration.Validation.CIMatrix)
-            #expect(GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-099") is GitHub.ContinuousIntegration.Validation.CIMatrix)
+            #expect(
+                GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-010")
+                    is GitHub.ContinuousIntegration.Validation.CIMatrix
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-099")
+                    is GitHub.ContinuousIntegration.Validation.CIMatrix
+            )
             #expect(
                 GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-102")
-                    is GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions)
-            #expect(GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-021") is GitHub.ContinuousIntegration.Validation.EmbeddedJob)
+                    is GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-021")
+                    is GitHub.ContinuousIntegration.Validation.EmbeddedJob
+            )
             #expect(
                 GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-103")
-                    is GitHub.ContinuousIntegration.Validation.EnvironmentContext)
+                    is GitHub.ContinuousIntegration.Validation.EnvironmentContext
+            )
         }
 
         /// `validate-base.yml` dispatches by the retired script's path,
@@ -54,9 +65,12 @@ struct CIValidationC1bTests {
             (".github/scripts/validate-env-context.py", "CI-103"),
         ])
         func `each retired script resolves to its replacement`(
-            script: String, rule: GitHub.ContinuousIntegration.Validation.Rule
+            script: String,
+            rule: GitHub.ContinuousIntegration.Validation.Rule
         ) {
-            let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(replacing: script)
+            let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(
+                replacing: script
+            )
             #expect(validator?.rules.contains(rule) == true)
         }
     }
@@ -97,7 +111,9 @@ struct CIValidationC1bTests {
         @Test func `a list-form runs-on is searched element by element`() {
             #expect(
                 Rule.referencesEnvironment(
-                    .sequence([.text("self-hosted"), .text("${{ env.LABEL }}")])))
+                    .sequence([.text("self-hosted"), .text("${{ env.LABEL }}")])
+                )
+            )
         }
 
         @Test func `a non-text scalar cannot carry an expression`() {
@@ -113,18 +129,19 @@ struct CIValidationC1bTests {
                 "both-fields",
                 [
                     ".github/workflows/ci.yml": """
-                        name: CI
-                        on:
-                          push:
-                        jobs:
-                          build:
-                            runs-on: ${{ env.RUNNER }}
-                            container:
-                              image: swift:${{ env.SWIFT_VERSION }}
-                            steps:
-                              - run: swift build
-                        """
-                ])
+                    name: CI
+                    on:
+                      push:
+                    jobs:
+                      build:
+                        runs-on: ${{ env.RUNNER }}
+                        container:
+                          image: swift:${{ env.SWIFT_VERSION }}
+                        steps:
+                          - run: swift build
+                    """
+                ]
+            )
             let findings = try Rule().findings(in: fixture.subject)
             #expect(findings.count == 2)
             #expect(findings[0].message.contains("`runs-on:`"))
@@ -144,18 +161,21 @@ struct CIValidationC1bTests {
                     "embedded",
                     [
                         ".github/workflows/swift-ci.yml": """
-                            name: Swift CI
-                            on:
-                              workflow_call:
-                            jobs:
-                              embedded:
-                                runs-on: ubuntu-latest
-                                continue-on-error: \(value)
-                                steps:
-                                  - run: swift build
-                            """
-                    ])
-                let findings = try GitHub.ContinuousIntegration.Validation.EmbeddedJob().findings(in: fixture.subject)
+                        name: Swift CI
+                        on:
+                          workflow_call:
+                        jobs:
+                          embedded:
+                            runs-on: ubuntu-latest
+                            continue-on-error: \(value)
+                            steps:
+                              - run: swift build
+                        """
+                    ]
+                )
+                let findings = try GitHub.ContinuousIntegration.Validation.EmbeddedJob().findings(
+                    in: fixture.subject
+                )
                 #expect(findings.isEmpty == satisfied, "continue-on-error: \(value)")
             }
         }
@@ -165,8 +185,14 @@ struct CIValidationC1bTests {
             // corpus keeps `no-swift-ci-yml` as an edge scenario rather
             // than folding it into pass.
             let fixture = CIValidationC1bTests.repository(
-                "no-swift-ci", [".github/workflows/lint.yml": "name: Lint\non:\n  push:\n"])
-            #expect(try GitHub.ContinuousIntegration.Validation.EmbeddedJob().findings(in: fixture.subject).isEmpty)
+                "no-swift-ci",
+                [".github/workflows/lint.yml": "name: Lint\non:\n  push:\n"]
+            )
+            #expect(
+                try GitHub.ContinuousIntegration.Validation.EmbeddedJob().findings(
+                    in: fixture.subject
+                ).isEmpty
+            )
         }
     }
 
@@ -180,9 +206,17 @@ struct CIValidationC1bTests {
             let workflow = [".github/workflows/swift-ci.yml": "name: Swift CI\njobs: {}\n"]
             let fixture = CIValidationC1bTests.repository("wrapper", workflow)
             let scoped = GitHub.ContinuousIntegration.Validation.Subject(
-                repository: "swift-primitives/.github", root: fixture.root)
-            #expect(try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(in: scoped).isEmpty)
-            #expect(!(try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(in: fixture.subject).isEmpty))
+                repository: "swift-primitives/.github",
+                root: fixture.root
+            )
+            #expect(
+                try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(in: scoped).isEmpty
+            )
+            #expect(
+                !(try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(
+                    in: fixture.subject
+                ).isEmpty)
+            )
         }
 
         @Test func `the two postures are reported under different rules`() throws {
@@ -194,38 +228,41 @@ struct CIValidationC1bTests {
                 "postures",
                 [
                     ".github/workflows/swift-ci.yml": """
-                        name: Swift CI
-                        on:
-                          workflow_call:
-                        jobs:
-                          macos-release:
-                            runs-on: macos-26
-                            steps:
-                              - run: swift build
-                          linux-release:
-                            runs-on: ubuntu-latest
-                            steps:
-                              - run: swift build
-                          linux-nightly:
-                            runs-on: ubuntu-latest
-                            steps:
-                              - run: swift build
-                          windows-release:
-                            runs-on: windows-latest
-                            continue-on-error: true
-                            steps:
-                              - run: swift build
-                          apple-simulator-build:
-                            runs-on: macos-26
-                            continue-on-error: true
-                            strategy:
-                              matrix:
-                                platform: [iOS, tvOS, watchOS, visionOS]
-                            steps:
-                              - run: xcodebuild
-                        """
-                ])
-            let findings = try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(in: fixture.subject)
+                    name: Swift CI
+                    on:
+                      workflow_call:
+                    jobs:
+                      macos-release:
+                        runs-on: macos-26
+                        steps:
+                          - run: swift build
+                      linux-release:
+                        runs-on: ubuntu-latest
+                        steps:
+                          - run: swift build
+                      linux-nightly:
+                        runs-on: ubuntu-latest
+                        steps:
+                          - run: swift build
+                      windows-release:
+                        runs-on: windows-latest
+                        continue-on-error: true
+                        steps:
+                          - run: swift build
+                      apple-simulator-build:
+                        runs-on: macos-26
+                        continue-on-error: true
+                        strategy:
+                          matrix:
+                            platform: [iOS, tvOS, watchOS, visionOS]
+                        steps:
+                          - run: xcodebuild
+                    """
+                ]
+            )
+            let findings = try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(
+                in: fixture.subject
+            )
             #expect(findings.map(\.rule) == ["CI-010", "CI-099"])
         }
 
@@ -234,31 +271,35 @@ struct CIValidationC1bTests {
                 "collapsed",
                 [
                     ".github/workflows/swift-ci.yml": """
-                        name: Swift CI
-                        on:
-                          workflow_call:
-                        jobs:
-                          macos-release:
-                            runs-on: macos-26
-                          linux-release:
-                            runs-on: ubuntu-latest
-                          linux-nightly:
-                            runs-on: ubuntu-latest
-                            continue-on-error: true
-                          windows-release:
-                            runs-on: windows-latest
-                          apple-simulator-build:
-                            runs-on: macos-26
-                            continue-on-error: true
-                            strategy:
-                              matrix:
-                                platform: [iOS]
-                        """
-                ])
-            let findings = try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(in: fixture.subject)
+                    name: Swift CI
+                    on:
+                      workflow_call:
+                    jobs:
+                      macos-release:
+                        runs-on: macos-26
+                      linux-release:
+                        runs-on: ubuntu-latest
+                      linux-nightly:
+                        runs-on: ubuntu-latest
+                        continue-on-error: true
+                      windows-release:
+                        runs-on: windows-latest
+                      apple-simulator-build:
+                        runs-on: macos-26
+                        continue-on-error: true
+                        strategy:
+                          matrix:
+                            platform: [iOS]
+                    """
+                ]
+            )
+            let findings = try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(
+                in: fixture.subject
+            )
             #expect(findings.count == 1)
             #expect(
-                findings[0].message.hasSuffix("missing: ['tvOS', 'visionOS', 'watchOS']"))
+                findings[0].message.hasSuffix("missing: ['tvOS', 'visionOS', 'watchOS']")
+            )
         }
 
         @Test func `a wrong runner quotes the value it read back`() throws {
@@ -266,33 +307,37 @@ struct CIValidationC1bTests {
                 "wrong-runner",
                 [
                     ".github/workflows/swift-ci.yml": """
-                        name: Swift CI
-                        on:
-                          workflow_call:
-                        jobs:
-                          macos-release:
-                            runs-on: ubuntu-latest
-                          linux-release:
-                            runs-on: ubuntu-latest
-                          linux-nightly:
-                            runs-on: ubuntu-latest
-                            continue-on-error: true
-                          windows-release:
-                            runs-on: windows-latest
-                          apple-simulator-build:
-                            runs-on: macos-26
-                            continue-on-error: true
-                            strategy:
-                              matrix:
-                                platform: [iOS, tvOS, watchOS, visionOS]
-                        """
-                ])
-            let findings = try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(in: fixture.subject)
+                    name: Swift CI
+                    on:
+                      workflow_call:
+                    jobs:
+                      macos-release:
+                        runs-on: ubuntu-latest
+                      linux-release:
+                        runs-on: ubuntu-latest
+                      linux-nightly:
+                        runs-on: ubuntu-latest
+                        continue-on-error: true
+                      windows-release:
+                        runs-on: windows-latest
+                      apple-simulator-build:
+                        runs-on: macos-26
+                        continue-on-error: true
+                        strategy:
+                          matrix:
+                            platform: [iOS, tvOS, watchOS, visionOS]
+                    """
+                ]
+            )
+            let findings = try GitHub.ContinuousIntegration.Validation.CIMatrix().findings(
+                in: fixture.subject
+            )
             #expect(findings.count == 1)
             #expect(
                 findings[0].message
                     == "macos-release: runs-on must reference a macos runner per [CI-010]; "
-                    + "got 'ubuntu-latest'")
+                    + "got 'ubuntu-latest'"
+            )
         }
     }
 
@@ -305,22 +350,27 @@ struct CIValidationC1bTests {
                 "legit",
                 [
                     ".github/actions/legit/action.yml": """
-                        name: Legit
-                        description: Does a thing.
-                        outputs:
-                          key:
-                            description: The cache key.
-                            value: ${{ steps.compute.outputs.key }}
-                        runs:
-                          using: composite
-                          steps:
-                            - shell: bash
-                              env:
-                                REF: ${{ github.ref }}
-                              run: echo "$REF"
-                        """
-                ])
-            #expect(try GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions().findings(in: fixture.subject).isEmpty)
+                    name: Legit
+                    description: Does a thing.
+                    outputs:
+                      key:
+                        description: The cache key.
+                        value: ${{ steps.compute.outputs.key }}
+                    runs:
+                      using: composite
+                      steps:
+                        - shell: bash
+                          env:
+                            REF: ${{ github.ref }}
+                          run: echo "$REF"
+                    """
+                ]
+            )
+            #expect(
+                try GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions().findings(
+                    in: fixture.subject
+                ).isEmpty
+            )
         }
 
         @Test func `all three description positions are scanned in order`() throws {
@@ -328,20 +378,22 @@ struct CIValidationC1bTests {
                 "broken",
                 [
                     ".github/actions/broken/action.yml": """
-                        name: Broken
-                        description: Uses ${{ inputs.name }} badly.
-                        inputs:
-                          token:
-                            description: The ${{ github.token }} to use.
-                        outputs:
-                          key:
-                            description: Keyed on ${{ github.sha }}.
-                        runs:
-                          using: composite
-                          steps: []
-                        """
-                ])
-            let findings = try GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions().findings(in: fixture.subject)
+                    name: Broken
+                    description: Uses ${{ inputs.name }} badly.
+                    inputs:
+                      token:
+                        description: The ${{ github.token }} to use.
+                    outputs:
+                      key:
+                        description: Keyed on ${{ github.sha }}.
+                    runs:
+                      using: composite
+                      steps: []
+                    """
+                ]
+            )
+            let findings = try GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions()
+                .findings(in: fixture.subject)
             #expect(findings.count == 3)
             #expect(findings[0].message.contains("top-level description"))
             #expect(findings[1].message.contains("inputs.token description"))
@@ -350,8 +402,14 @@ struct CIValidationC1bTests {
 
         @Test func `a repository with no actions directory is silent`() throws {
             let fixture = CIValidationC1bTests.repository(
-                "no-actions", ["README.md": "# nothing here\n"])
-            #expect(try GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions().findings(in: fixture.subject).isEmpty)
+                "no-actions",
+                ["README.md": "# nothing here\n"]
+            )
+            #expect(
+                try GitHub.ContinuousIntegration.Validation.CompositeActionDescriptions().findings(
+                    in: fixture.subject
+                ).isEmpty
+            )
         }
     }
 }

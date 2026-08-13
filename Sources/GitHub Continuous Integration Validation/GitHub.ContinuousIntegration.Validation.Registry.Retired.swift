@@ -1,6 +1,8 @@
 import GitHub_Continuous_Integration
 import GitHub_Standard
 
+// swiftlint:disable no_any_protocol_existential
+// This extension selects from the intentionally type-erased heterogeneous registry.
 extension GitHub.ContinuousIntegration.Validation.Registry {
     /// The validator that has replaced a retired Python script, or `nil`
     /// when that script has no Swift owner yet.
@@ -28,7 +30,10 @@ extension GitHub.ContinuousIntegration.Validation.Registry {
     /// Matching is exact on the recorded path. A validator whose
     /// counterpart is already deleted records `nil` and is therefore
     /// never selected this way — by then no caller names the script.
-    public static func validator(replacing script: String) -> (any GitHub.ContinuousIntegration.Validation.Validator)? {
+    public static func validator(
+        replacing script: String
+    ) -> (any GitHub.ContinuousIntegration.Validation.Validator)? {
         validators.first { $0.retiredScript == script }
     }
 }
+// swiftlint:enable no_any_protocol_existential

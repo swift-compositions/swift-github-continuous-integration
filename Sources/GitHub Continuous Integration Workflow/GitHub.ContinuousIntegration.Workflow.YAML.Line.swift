@@ -58,7 +58,8 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                         indent: raw.prefix(while: { $0 == " " }).count,
                         raw: raw,
                         content: stripComment(raw).trimmedTrailing()
-                            .drop(while: { $0 == " " }).description)
+                            .drop(while: { $0 == " " }).description
+                    )
                 }
         }
 
@@ -104,6 +105,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                 case "\"", "'": quote = character
                 case "[", "{": depth += 1
                 case "]", "}": depth -= 1
+
                 case ":" where depth == 0:
                     let next = index + 1
                     guard next == characters.count || characters[next] == " " else { continue }
@@ -111,6 +113,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                     guard !key.isEmpty else { return nil }
                     let value = String(characters[next...]).drop(while: { $0 == " " })
                     return (key, value.description.trimmedTrailing())
+
                 default: continue
                 }
             }
@@ -138,6 +141,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                     }
                 }
                 return result
+
             case "\"":
                 var result = ""
                 var escaped = false
@@ -158,6 +162,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                     }
                 }
                 return result
+
             default:
                 return nil
             }
