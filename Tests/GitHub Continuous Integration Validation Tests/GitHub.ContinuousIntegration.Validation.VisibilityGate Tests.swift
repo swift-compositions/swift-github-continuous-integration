@@ -156,8 +156,8 @@ struct CIValidationVisibilityGateTests {
                 GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: .boolean(true))
                     == "True"
             )
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: nil) == "")
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: .null) == "")
+            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: nil).isEmpty)
+            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: .null).isEmpty)
         }
 
         @Test func `an absent if is reported as the empty repr`() {
