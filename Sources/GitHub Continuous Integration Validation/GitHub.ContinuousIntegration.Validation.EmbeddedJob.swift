@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-021]` — a `swift-ci.yml` that declares an `embedded` job must
@@ -38,12 +38,17 @@ extension GitHub.ContinuousIntegration.Validation {
             }
             let document: GitHub.ContinuousIntegration.Workflow.Document
             do {
-                document = try GitHub.ContinuousIntegration.Workflow.Document(name: "swift-ci.yml", text: text)
+                document = try GitHub.ContinuousIntegration.Workflow.Document(
+                    name: "swift-ci.yml",
+                    text: text
+                )
             } catch {
                 return [
                     Finding(
-                        repository: subject.repository, rule: rule,
-                        message: "swift-ci.yml: YAML parse failed: \(error.message)")
+                        repository: subject.repository,
+                        rule: rule,
+                        message: "swift-ci.yml: YAML parse failed: \(error.message)"
+                    )
                 ]
             }
             guard let embedded = document.jobs.first(where: { $0.name == "embedded" }) else {

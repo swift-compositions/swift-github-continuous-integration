@@ -1,7 +1,7 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Workflow
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-082]` — a curl-fetched binary must be verified with

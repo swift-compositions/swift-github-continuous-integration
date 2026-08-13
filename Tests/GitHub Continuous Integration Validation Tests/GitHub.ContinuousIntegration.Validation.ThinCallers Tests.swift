@@ -1,7 +1,7 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Validation
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Validation
+import GitHub_Standard
 import Testing
 
 /// The fixture corpus is the differential gate's subject and covers the
@@ -15,7 +15,9 @@ struct CIValidationThinCallersTests {
     /// A subject built from text written into a scratch tree, since every
     /// predicate reads a real repository layout.
     static func subject(
-        _ repository: String, ci: String? = nil, files: [String: String] = [:]
+        _ repository: String,
+        ci: String? = nil,
+        files: [String: String] = [:]
     ) throws -> (GitHub.ContinuousIntegration.Validation.Subject, URL) {
         let root = URL(filePath: NSTemporaryDirectory())
             .appending(path: "c3-\(UUID().uuidString)")
@@ -25,14 +27,23 @@ struct CIValidationThinCallersTests {
         for (path, text) in contents {
             let file = root.appending(path: path)
             try FileManager.default.createDirectory(
-                at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+                at: file.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
             try text.write(to: file, atomically: true, encoding: .utf8)
         }
-        return (GitHub.ContinuousIntegration.Validation.Subject(repository: repository, root: root.path), root)
+        return (
+            GitHub.ContinuousIntegration.Validation.Subject(
+                repository: repository,
+                root: root.path
+            ), root
+        )
     }
 
     static func findings(
-        _ repository: String, ci: String? = nil, files: [String: String] = [:]
+        _ repository: String,
+        ci: String? = nil,
+        files: [String: String] = [:]
     ) throws -> [GitHub.ContinuousIntegration.Validation.Finding] {
         let (subject, root) = try subject(repository, ci: ci, files: files)
         defer { try? FileManager.default.removeItem(at: root) }
@@ -85,12 +96,16 @@ struct CIValidationThinCallersTests {
         #expect(try Self.findings("swift-iso/swift-x", ci: Self.explicitCaller).isEmpty)
 
         let inheritInSubOrganization = try Self.findings(
-            "swift-iso/swift-x", ci: Self.inheritCaller)
+            "swift-iso/swift-x",
+            ci: Self.inheritCaller
+        )
         #expect(inheritInSubOrganization.map(\.rule.rawValue) == ["CI-059"])
         #expect(inheritInSubOrganization[0].message.hasPrefix("[cross-org-inherit]"))
 
         let explicitInLayerOrganization = try Self.findings(
-            "swift-standards/swift-x", ci: Self.explicitCaller)
+            "swift-standards/swift-x",
+            ci: Self.explicitCaller
+        )
         #expect(explicitInLayerOrganization.map(\.rule.rawValue) == ["CI-059"])
         #expect(explicitInLayerOrganization[0].message.hasPrefix("[same-org-explicit]"))
     }
@@ -99,10 +114,12 @@ struct CIValidationThinCallersTests {
     /// fires, and a name beyond it fires. Both can fire on one job.
     @Test
     func theCrossOrganizationSetIsClosedInBothDirections() throws {
-        let caller = Self.explicitCaller
+        let caller =
+            Self.explicitCaller
             .replacingOccurrences(
                 of: "      SWIFT_INSTITUTE_BOT_APP_ID: ${{ secrets.SWIFT_INSTITUTE_BOT_APP_ID }}\n",
-                with: "")
+                with: ""
+            )
             + "\n      EXTRA_TOKEN: ${{ secrets.EXTRA_TOKEN }}"
         let findings = try Self.findings("swift-ietf/swift-x", ci: caller)
         let classes = findings.map { $0.message.prefix { $0 != "]" } + "]" }
@@ -121,7 +138,9 @@ struct CIValidationThinCallersTests {
     @Test
     func anExemptionAdmitsOneClassAndSuppressesNothingElse() throws {
         let admitted = try Self.findings(
-            "swift-institute-test/swift-exempt-explicit-caller", ci: Self.explicitCaller)
+            "swift-institute-test/swift-exempt-explicit-caller",
+            ci: Self.explicitCaller
+        )
         #expect(admitted.map(\.rule.rawValue) == ["CI-059-EXEMPT"])
 
         // Same repository, same file — but omission, not explicit
@@ -129,7 +148,8 @@ struct CIValidationThinCallersTests {
         // it.
         let nearMiss = try Self.findings(
             "swift-institute-test/swift-exempt-explicit-caller",
-            ci: Self.inheritCaller.replacingOccurrences(of: "    secrets: inherit", with: ""))
+            ci: Self.inheritCaller.replacingOccurrences(of: "    secrets: inherit", with: "")
+        )
         #expect(nearMiss.map(\.rule.rawValue) == ["CI-059"])
         #expect(nearMiss[0].message.hasPrefix("[same-org-omitted]"))
     }
@@ -172,7 +192,11 @@ struct CIValidationThinCallersTests {
         let pins = try Self.findings("swift-standards/swift-x", ci: caller)
             .filter { $0.rule.rawValue == "CI-030" }
         #expect(pins.count == 1)
-        #expect(pins[0].message.contains("swift-standards/.github/.github/workflows/swift-ci.yml@v1.0.0"))
+        #expect(
+            pins[0].message.contains(
+                "swift-standards/.github/.github/workflows/swift-ci.yml@v1.0.0"
+            )
+        )
         #expect(!pins[0].message.contains("some-vendor"))
     }
 
@@ -252,10 +276,14 @@ struct CIValidationThinCallersTests {
     @Test
     func aRepositoryWithoutARootManifestIsOutOfScope() throws {
         let (subject, root) = try Self.subject(
-            "swift-standards/swift-x", ci: "jobs:\n  a:\n    runs-on: ubuntu-latest\n")
+            "swift-standards/swift-x",
+            ci: "jobs:\n  a:\n    runs-on: ubuntu-latest\n"
+        )
         defer { try? FileManager.default.removeItem(at: root) }
         try FileManager.default.removeItem(at: root.appending(path: "Package.swift"))
-        #expect(try GitHub.ContinuousIntegration.Validation.ThinCallers().findings(in: subject).isEmpty)
+        #expect(
+            try GitHub.ContinuousIntegration.Validation.ThinCallers().findings(in: subject).isEmpty
+        )
     }
 
     /// The consolidated legs must not come back as standalone files, and
@@ -264,11 +292,13 @@ struct CIValidationThinCallersTests {
     @Test
     func standaloneFormatAndLintWorkflowsFireOnTheirOwn() throws {
         let findings = try Self.findings(
-            "swift-standards/swift-x", ci: Self.inheritCaller,
+            "swift-standards/swift-x",
+            ci: Self.inheritCaller,
             files: [
                 ".github/workflows/swift-format.yml": "name: fmt\n",
                 ".github/workflows/swiftlint.yml": "name: lint\n",
-            ])
+            ]
+        )
         #expect(findings.count == 2)
         #expect(findings.allSatisfy { $0.message.contains("exists as a standalone file") })
     }
@@ -304,9 +334,13 @@ struct CIValidationThinCallersTests {
     @Test
     func everyRuleResolvesToThisValidator() {
         for rule in ["CI-030", "CI-059", "GH-REPO-074", "INTEGRATED-DOCS-ADMISSION"] {
-            let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(for: .init(rule))
+            let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(
+                for: .init(rule)
+            )
             #expect(validator is GitHub.ContinuousIntegration.Validation.ThinCallers, "\(rule)")
         }
-        #expect(GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-059-EXEMPT") == nil)
+        #expect(
+            GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-059-EXEMPT") == nil
+        )
     }
 }

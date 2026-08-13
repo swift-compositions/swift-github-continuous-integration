@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-080]` — every in-scope job's first step is a SHA-pinned
@@ -41,23 +41,30 @@ extension GitHub.ContinuousIntegration.Validation {
             for document in documents {
                 for job in document.jobs {
                     guard !Self.isRouting(job), !Self.aggregators.contains(job.name),
-                          let first = Self.firstStep(job)
+                        let first = Self.firstStep(job)
                     else { continue }
                     let uses = (first["uses"] ?? .text("")).pythonString
                     let quoted = GitHub.ContinuousIntegration.Workflow.YAML.Node.repr(uses)
                     let message: String? =
                         if !uses.hasPrefix(Self.action) {
                             Self.absentMessage(
-                                document: document.name, job: job.name, uses: quoted)
+                                document: document.name,
+                                job: job.name,
+                                uses: quoted
+                            )
                         } else if !Self.isPinnedToDigest(uses) {
                             Self.unpinnedMessage(
-                                document: document.name, job: job.name, uses: quoted)
+                                document: document.name,
+                                job: job.name,
+                                uses: quoted
+                            )
                         } else {
                             nil
                         }
                     guard let message else { continue }
                     findings.append(
-                        Finding(repository: subject.repository, rule: rule, message: message))
+                        Finding(repository: subject.repository, rule: rule, message: message)
+                    )
                 }
             }
             return findings
@@ -76,7 +83,9 @@ extension GitHub.ContinuousIntegration.Validation {
         /// view: a malformed leading entry means the *first* step is not
         /// inspectable, which the retired validator treated as an odd
         /// shape to skip — not as licence to inspect the second one.
-        static func firstStep(_ job: GitHub.ContinuousIntegration.Workflow.Job) -> GitHub.ContinuousIntegration.Workflow.YAML.Mapping? {
+        static func firstStep(
+            _ job: GitHub.ContinuousIntegration.Workflow.Job
+        ) -> GitHub.ContinuousIntegration.Workflow.YAML.Mapping? {
             job.body["steps"]?.sequence?.first?.mapping
         }
 

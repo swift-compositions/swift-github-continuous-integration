@@ -56,6 +56,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
             switch indicator {
             case .literal:
                 text = bodies.joined(separator: "\n")
+
             case .folded:
                 text = fold(bodies)
             }
@@ -63,9 +64,11 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
             switch indicator.chomping {
             case .strip:
                 while text.hasSuffix("\n") { text.removeLast() }
+
             case .clip:
                 while text.hasSuffix("\n") { text.removeLast() }
                 if !text.isEmpty { text.append("\n") }
+
             case .keep:
                 text.append("\n")
             }

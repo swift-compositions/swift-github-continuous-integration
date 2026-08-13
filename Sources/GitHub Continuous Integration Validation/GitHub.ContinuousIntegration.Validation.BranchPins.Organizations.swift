@@ -1,7 +1,7 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Workflow
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation.BranchPins {
     /// The Institute organization set, read from the canonical manifest.
@@ -47,7 +47,9 @@ extension GitHub.ContinuousIntegration.Validation.BranchPins {
             }
             let node: GitHub.ContinuousIntegration.Workflow.YAML.Node
             do {
-                node = try GitHub.ContinuousIntegration.Workflow.YAML.Parser.parse(String(decoding: data, as: UTF8.self))
+                node = try GitHub.ContinuousIntegration.Workflow.YAML.Parser.parse(
+                    String(decoding: data, as: UTF8.self)
+                )
             } catch {
                 throw .missingSupportFile(path: path)
             }

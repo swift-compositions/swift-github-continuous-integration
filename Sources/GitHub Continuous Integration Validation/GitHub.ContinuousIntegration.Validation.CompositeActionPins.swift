@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-117]` — a self-referential composite-action `uses:` must be
@@ -138,7 +138,9 @@ extension GitHub.ContinuousIntegration.Validation {
                 .replacingOccurrences(of: "\r\n", with: "\n")
                 .replacingOccurrences(of: "\r", with: "\n")
             var lines = normalized.split(
-                separator: "\n", omittingEmptySubsequences: false)
+                separator: "\n",
+                omittingEmptySubsequences: false
+            )
             if lines.last?.isEmpty == true { lines.removeLast() }
             return lines
         }

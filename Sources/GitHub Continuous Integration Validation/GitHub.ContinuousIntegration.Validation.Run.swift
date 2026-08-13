@@ -1,6 +1,8 @@
 import GitHub_Continuous_Integration
 import GitHub_Standard
 
+// swiftlint:disable no_any_protocol_existential
+// A run dynamically dispatches a validator selected from the heterogeneous registry.
 extension GitHub.ContinuousIntegration.Validation {
     /// One validator invocation's whole result, in the shape a front end
     /// needs: what to print, and what to exit with.
@@ -58,3 +60,4 @@ extension GitHub.ContinuousIntegration.Validation {
         }
     }
 }
+// swiftlint:enable no_any_protocol_existential

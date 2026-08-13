@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
 extension GitHub.ContinuousIntegration.Validation {
     /// The fixture corpus: `<root>/<rule-id>/{pass,fail,edge}/<scenario>/`.
@@ -61,11 +61,17 @@ extension GitHub.ContinuousIntegration.Validation {
         /// Every rule directory, sorted, optionally restricted to a
         /// prefix. A non-matching directory is not a skip — it was never
         /// selected.
-        public func ruleDirectories(matching prefix: String = "") throws(EnvironmentDefect) -> [String] {
-            guard let names = try? FileManager.default.contentsOfDirectory(atPath: root) else {
+        public func ruleDirectories(
+            matching prefix: String = ""
+        ) throws(EnvironmentDefect) -> [String] {
+            let names: [String]
+            do {
+                names = try FileManager.default.contentsOfDirectory(atPath: root)
+            } catch {
                 throw EnvironmentDefect.unreadableSubject(root: root)
             }
-            return names
+            return
+                names
                 .filter { $0.hasPrefix(prefix) }
                 .filter { isDirectory("\(root)/\($0)") }
                 .sorted()
@@ -78,12 +84,21 @@ extension GitHub.ContinuousIntegration.Validation {
             for expectation in Expectation.allCases.sorted(by: { $0.rawValue < $1.rawValue }) {
                 let path = "\(root)/\(directory)/\(expectation.rawValue)"
                 guard isDirectory(path) else { continue }
-                let names = (try? FileManager.default.contentsOfDirectory(atPath: path)) ?? []
+                let names: [String]
+                do {
+                    names = try FileManager.default.contentsOfDirectory(atPath: path)
+                } catch {
+                    throw EnvironmentDefect.unreadableFile(path: path)
+                }
                 for name in names.sorted() where isDirectory("\(path)/\(name)") {
                     scenarios.append(
                         Scenario(
-                            directory: directory, expectation: expectation, name: name,
-                            root: "\(path)/\(name)"))
+                            directory: directory,
+                            expectation: expectation,
+                            name: name,
+                            root: "\(path)/\(name)"
+                        )
+                    )
                 }
             }
             return scenarios

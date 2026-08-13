@@ -177,10 +177,14 @@ struct CIValidationBinaryInstallChecksumTests {
             // `/bin/` counts only as a whole segment; `/sbin/` is a
             // different destination and the retired scan excluded it.
             #expect(
-                !GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.namesBinaryDirectory("mv tool /sbin/tool")
+                !GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.namesBinaryDirectory(
+                    "mv tool /sbin/tool"
+                )
             )
             #expect(
-                GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.namesBinaryDirectory("mv tool /bin/tool")
+                GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.namesBinaryDirectory(
+                    "mv tool /bin/tool"
+                )
             )
             #expect(
                 GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.namesBinaryDirectory(
@@ -202,9 +206,15 @@ struct CIValidationBinaryInstallChecksumTests {
 
         @Test func `sha256sum without -c computes but does not verify`() {
             #expect(
-                !GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.verifiesChecksum("sha256sum tool > tool.sha")
+                !GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.verifiesChecksum(
+                    "sha256sum tool > tool.sha"
+                )
             )
-            #expect(GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.verifiesChecksum("sha256sum --check t.sha"))
+            #expect(
+                GitHub.ContinuousIntegration.Validation.BinaryInstallChecksum.verifiesChecksum(
+                    "sha256sum --check t.sha"
+                )
+            )
         }
     }
 }

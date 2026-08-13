@@ -128,7 +128,9 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
         }
 
         static var closedSet: String {
-            GitHub.ContinuousIntegration.Validation.ThinCallers.crossOrganizationSecrets.joined(separator: ", ")
+            GitHub.ContinuousIntegration.Validation.ThinCallers.crossOrganizationSecrets.joined(
+                separator: ", "
+            )
         }
     }
 }

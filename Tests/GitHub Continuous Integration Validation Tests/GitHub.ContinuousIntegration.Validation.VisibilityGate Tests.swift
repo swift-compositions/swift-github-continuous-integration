@@ -1,14 +1,17 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 import Testing
 
 @testable import GitHub_Continuous_Integration_Validation
 
 @Suite
 struct CIValidationVisibilityGateTests {
-    static func document(_ text: String) throws -> GitHub.ContinuousIntegration.Workflow.Document {
-        try GitHub.ContinuousIntegration.Workflow.Document(name: "reusable.yml", text: text)
+    static func document(
+        _ text: String,
+        name: String = "reusable.yml"
+    ) throws -> GitHub.ContinuousIntegration.Workflow.Document {
+        try GitHub.ContinuousIntegration.Workflow.Document(name: name, text: text)
     }
 
     static let reusable = """
@@ -21,10 +24,13 @@ struct CIValidationVisibilityGateTests {
     @Suite
     struct Unit {
         @Test func `the validator is registered for its rule`() {
-            let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-032")
+            let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(
+                for: "CI-032"
+            )
             #expect(validator is GitHub.ContinuousIntegration.Validation.VisibilityGate)
             #expect(
-                validator?.retiredScript == ".github/scripts/validate-visibility-gate.py")
+                validator?.retiredScript == ".github/scripts/validate-visibility-gate.py"
+            )
         }
 
         @Test func `a reusable is recognised in all three on spellings`() throws {
@@ -32,16 +38,22 @@ struct CIValidationVisibilityGateTests {
             // is why the map form is the one most likely to regress.
             for spelling in ["workflow_call:\n    inputs: {}", "workflow_call:"] {
                 let document = try CIValidationVisibilityGateTests.document(
-                    "on:\n  \(spelling)\njobs: {}\n")
+                    "on:\n  \(spelling)\njobs: {}\n"
+                )
                 #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.isReusable(document))
             }
             #expect(
                 GitHub.ContinuousIntegration.Validation.VisibilityGate.isReusable(
-                    try CIValidationVisibilityGateTests.document("on: workflow_call\njobs: {}\n")))
+                    try CIValidationVisibilityGateTests.document("on: workflow_call\njobs: {}\n")
+                )
+            )
             #expect(
                 GitHub.ContinuousIntegration.Validation.VisibilityGate.isReusable(
                     try CIValidationVisibilityGateTests.document(
-                        "on: [workflow_call]\njobs: {}\n")))
+                        "on: [workflow_call]\njobs: {}\n"
+                    )
+                )
+            )
         }
 
         @Test func `a schedule only workflow is out of scope`() throws {
@@ -49,14 +61,32 @@ struct CIValidationVisibilityGateTests {
             // concern — not a repository that passes, a question that is
             // not asked.
             let document = try CIValidationVisibilityGateTests.document(
-                "on:\n  schedule:\n    - cron: '0 0 * * *'\njobs: {}\n")
+                "on:\n  schedule:\n    - cron: '0 0 * * *'\njobs: {}\n"
+            )
             #expect(!GitHub.ContinuousIntegration.Validation.VisibilityGate.isReusable(document))
         }
 
         @Test func `a pure routing job is exempt`() throws {
             let document = try CIValidationVisibilityGateTests.document(
-                CIValidationVisibilityGateTests.reusable + "\n  route:\n    uses: ./a.yml\n")
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.isPureRouting(document.jobs[0]))
+                CIValidationVisibilityGateTests.reusable + "\n  route:\n    uses: ./a.yml\n"
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.VisibilityGate.isPureRouting(
+                    document.jobs[0]
+                )
+            )
+        }
+
+        @Test func `private verification selects the private visibility domain`() throws {
+            let document = try CIValidationVisibilityGateTests.document(
+                CIValidationVisibilityGateTests.reusable,
+                name: GitHub.ContinuousIntegration.Validation.VisibilityGate
+                    .privateVerificationDocument
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.VisibilityGate.gate(for: document)
+                    == GitHub.ContinuousIntegration.Validation.VisibilityGate.privateGate
+            )
         }
     }
 
@@ -68,39 +98,93 @@ struct CIValidationVisibilityGateTests {
             // reads as a shim.
             let document = try CIValidationVisibilityGateTests.document(
                 CIValidationVisibilityGateTests.reusable
-                    + "\n  half:\n    uses: ./a.yml\n    runs-on: ubuntu-latest\n")
-            #expect(!GitHub.ContinuousIntegration.Validation.VisibilityGate.isPureRouting(document.jobs[0]))
+                    + "\n  half:\n    uses: ./a.yml\n    runs-on: ubuntu-latest\n"
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.VisibilityGate.isPureRouting(
+                    document.jobs[0]
+                )
+            )
         }
 
         @Test func `a disabled job is skipped in both spellings`() {
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.isDisabled(.boolean(false)))
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.isDisabled(.text(" False ")))
-            #expect(!GitHub.ContinuousIntegration.Validation.VisibilityGate.isDisabled(.boolean(true)))
+            #expect(
+                GitHub.ContinuousIntegration.Validation.VisibilityGate.isDisabled(.boolean(false))
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.VisibilityGate.isDisabled(.text(" False "))
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.VisibilityGate.isDisabled(.boolean(true))
+            )
             #expect(!GitHub.ContinuousIntegration.Validation.VisibilityGate.isDisabled(nil))
+        }
+
+        @Test func `private and public gates refuse the opposite polarity`() {
+            let validator = GitHub.ContinuousIntegration.Validation.VisibilityGate.self
+            #expect(
+                validator.contains(
+                    gate: validator.privateGate,
+                    in: "${{ always() && github.event.repository.private }}"
+                )
+            )
+            #expect(
+                !validator.contains(
+                    gate: validator.privateGate,
+                    in: "${{ !github.event.repository.private }}"
+                )
+            )
+            #expect(
+                validator.contains(
+                    gate: validator.publicGate,
+                    in: "${{ !github.event.repository.private }}"
+                )
+            )
+            #expect(
+                !validator.contains(
+                    gate: validator.publicGate,
+                    in: "${{ github.event.repository.private }}"
+                )
+            )
         }
 
         @Test func `a boolean if stringifies the way Python printed it`() {
             // `if: true` reported as `'True'`, not `'true'`. The spelling
             // reaches the finding message, and the differential gate
             // compares it byte-for-byte.
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: .boolean(true)) == "True")
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: nil) == "")
-            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: .null) == "")
+            #expect(
+                GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: .boolean(true))
+                    == "True"
+            )
+            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: nil).isEmpty)
+            #expect(GitHub.ContinuousIntegration.Validation.VisibilityGate.text(of: .null).isEmpty)
         }
 
         @Test func `an absent if is reported as the empty repr`() {
             let message = GitHub.ContinuousIntegration.Validation.VisibilityGate.message(
-                document: "ci.yml", job: "build", clause: "")
+                document: "ci.yml",
+                job: "build",
+                clause: "",
+                gate: GitHub.ContinuousIntegration.Validation.VisibilityGate.publicGate
+            )
             #expect(message.hasSuffix("got if=''"))
             #expect(message.contains("job 'build'"))
-            #expect(message.contains(GitHub.ContinuousIntegration.Validation.VisibilityGate.gate))
+            #expect(
+                message.contains(
+                    GitHub.ContinuousIntegration.Validation.VisibilityGate.publicGate
+                )
+            )
         }
 
         @Test func `a clause containing an apostrophe switches quote`() {
             // Python's `repr` switches to double quotes rather than
             // escaping, and the message is compared byte-for-byte.
             let message = GitHub.ContinuousIntegration.Validation.VisibilityGate.message(
-                document: "ci.yml", job: "b", clause: "github.event_name == 'push'")
+                document: "ci.yml",
+                job: "b",
+                clause: "github.event_name == 'push'",
+                gate: GitHub.ContinuousIntegration.Validation.VisibilityGate.publicGate
+            )
             #expect(message.hasSuffix("got if=\"github.event_name == 'push'\""))
         }
     }

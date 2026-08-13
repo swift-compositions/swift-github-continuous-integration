@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[BRANCH-PIN-001]` — an Institute dependency must not be pinned to
@@ -100,7 +100,12 @@ extension GitHub.ContinuousIntegration.Validation {
         /// manifests are out of scope — this rule is about what a
         /// repository declares as its own dependencies.
         static func manifests(in root: String) -> [String] {
-            let names = (try? FileManager.default.contentsOfDirectory(atPath: root)) ?? []
+            let names: [String]
+            do {
+                names = try FileManager.default.contentsOfDirectory(atPath: root)
+            } catch {
+                return []
+            }
             return names.filter(isRootManifestName).sorted()
         }
 

@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
 extension GitHub.ContinuousIntegration.Validation.BranchPins {
     /// The shrink-only burn-down ledger of already-known branch pins.

@@ -1,7 +1,7 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Workflow
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// The repository a rule is asked about: its reporting name and its
@@ -56,12 +56,16 @@ extension GitHub.ContinuousIntegration.Validation {
             let directory = path(".github/workflows")
             var isDirectory: ObjCBool = false
             guard FileManager.default.fileExists(atPath: directory, isDirectory: &isDirectory),
-                  isDirectory.boolValue
+                isDirectory.boolValue
             else { return [] }
-            guard let names = try? FileManager.default.contentsOfDirectory(atPath: directory) else {
+            let names: [String]
+            do {
+                names = try FileManager.default.contentsOfDirectory(atPath: directory)
+            } catch {
                 throw EnvironmentDefect.unreadableFile(path: directory)
             }
-            return names
+            return
+                names
                 .filter { $0.hasSuffix(".yml") || $0.hasSuffix(".yaml") }
                 .map { "\(directory)/\($0)" }
                 .sorted()
@@ -77,7 +81,9 @@ extension GitHub.ContinuousIntegration.Validation {
         /// pass.
         public func workflows(
             citing rule: Rule
-        ) throws(EnvironmentDefect) -> (documents: [GitHub.ContinuousIntegration.Workflow.Document], refusals: [Finding]) {
+        ) throws(EnvironmentDefect) -> (
+            documents: [GitHub.ContinuousIntegration.Workflow.Document], refusals: [Finding]
+        ) {
             var documents: [GitHub.ContinuousIntegration.Workflow.Document] = []
             var refusals: [Finding] = []
             for path in try workflowPaths() {
@@ -88,12 +94,18 @@ extension GitHub.ContinuousIntegration.Validation {
                 do {
                     documents.append(
                         try GitHub.ContinuousIntegration.Workflow.Document(
-                            name: name, text: String(decoding: data, as: UTF8.self)))
+                            name: name,
+                            text: String(decoding: data, as: UTF8.self)
+                        )
+                    )
                 } catch {
                     refusals.append(
                         Finding(
-                            repository: repository, rule: rule,
-                            message: "\(name): YAML parse failed: \(error.message)"))
+                            repository: repository,
+                            rule: rule,
+                            message: "\(name): YAML parse failed: \(error.message)"
+                        )
+                    )
                 }
             }
             return (documents, refusals)

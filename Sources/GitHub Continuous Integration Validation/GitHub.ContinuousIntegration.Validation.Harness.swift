@@ -1,7 +1,9 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
+// swiftlint:disable no_any_protocol_existential
+// The harness composes intentionally heterogeneous validator implementations.
 extension GitHub.ContinuousIntegration.Validation {
     /// Runs registered validators against the fixture corpus and reports
     /// whether each scenario met its expectation.
@@ -65,7 +67,7 @@ extension GitHub.ContinuousIntegration.Validation {
 
             for directory in try corpus.ruleDirectories(matching: prefix) {
                 guard let rule = rule(forCorpusDirectory: directory),
-                      let validator = validator(for: rule)
+                    let validator = validator(for: rule)
                 else {
                     unowned.append(directory)
                     continue
@@ -74,13 +76,15 @@ extension GitHub.ContinuousIntegration.Validation {
                     let findings = try validator.findings(in: scenario.subject)
                         .filter { $0.rule == rule }
                     outcomes.append(
-                        Outcome(rule: rule, scenario: scenario, findings: findings))
+                        Outcome(rule: rule, scenario: scenario, findings: findings)
+                    )
                 }
             }
             return Report(outcomes: outcomes, unownedRuleDirectories: unowned)
         }
     }
 }
+// swiftlint:enable no_any_protocol_existential
 
 extension GitHub.ContinuousIntegration.Validation.Harness {
     /// One scenario's result.

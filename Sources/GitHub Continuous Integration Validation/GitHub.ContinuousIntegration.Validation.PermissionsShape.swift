@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-090]` workflow-level `permissions:` per trigger shape, and
@@ -58,12 +58,17 @@ extension GitHub.ContinuousIntegration.Validation {
                             rule: denyAll ? "CI-097" : "CI-090",
                             message: denyAll
                                 ? Self.denyAllMessage(document: document.name)
-                                : Self.reusableMessage(document: document.name)))
+                                : Self.reusableMessage(document: document.name)
+                        )
+                    )
                 } else if isStandalone, declared == nil {
                     findings.append(
                         Finding(
-                            repository: subject.repository, rule: "CI-090",
-                            message: Self.standaloneMessage(document: document.name)))
+                            repository: subject.repository,
+                            rule: "CI-090",
+                            message: Self.standaloneMessage(document: document.name)
+                        )
+                    )
                 }
             }
             return findings
