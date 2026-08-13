@@ -37,6 +37,20 @@ struct CIValidationBranchPinsTests {
         )
     }
 
+    @Test func `a supplied organization set needs no support manifest`() throws {
+        let repository = TemporaryRepository(repository: "example-organization-one/consumer")
+        repository.write(
+            Self.pinnedManifest(#"branch: "develop""#),
+            to: "Package.swift"
+        )
+        let validator = GitHub.ContinuousIntegration.Validation.BranchPins(
+            organizations: .init(names: ["example-organization-one"]))
+
+        let findings = try validator.findings(in: repository.subject)
+
+        #expect(findings.map(\.rule) == ["BRANCH-PIN-001"])
+    }
+
     @Suite
     struct `Baseline Contract` {
         @Test func `an unbaselined pin fires the rule`() throws {
