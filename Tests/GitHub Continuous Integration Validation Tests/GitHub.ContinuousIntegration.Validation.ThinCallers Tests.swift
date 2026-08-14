@@ -5,11 +5,8 @@ import GitHub_Standard
 import Testing
 
 /// The fixture corpus is the differential gate's subject and covers the
-/// registered shapes. These are the propositions the corpus cannot state
-/// directly: that the `[CI-059]` obligation genuinely *inverts* on the
-/// hosting organization, that the exemption gate admits one class and no
-/// other, and that diagnostic precedence needs its proof rather than a
-/// heuristic.
+/// registered shapes. These tests prove the terminal credential-free
+/// caller and the diagnostic-precedence behavior directly.
 @Suite
 struct CIValidationThinCallersTests {
     /// A subject built from text written into a scratch tree, since every
@@ -50,7 +47,7 @@ struct CIValidationThinCallersTests {
         return try GitHub.ContinuousIntegration.Validation.ThinCallers().findings(in: subject)
     }
 
-    static let inheritCaller = """
+    static let terminalCaller = """
         name: CI
 
         on:
@@ -61,97 +58,12 @@ struct CIValidationThinCallersTests {
         jobs:
           ci:
             uses: swift-standards/.github/.github/workflows/swift-ci.yml@main
-            secrets: inherit
         """
 
-    static let explicitCaller = """
-        name: CI
-
-        on:
-          push:
-            branches:
-              - main
-
-        jobs:
-          ci:
-            uses: swift-standards/.github/.github/workflows/swift-ci.yml@main
-            secrets:
-              PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
-              SWIFT_INSTITUTE_BOT_APP_CLIENT_ID: ${{ secrets.SWIFT_INSTITUTE_BOT_APP_CLIENT_ID }}
-              SWIFT_INSTITUTE_BOT_APP_ID: ${{ secrets.SWIFT_INSTITUTE_BOT_APP_ID }}
-              SWIFT_INSTITUTE_BOT_APP_PRIVATE_KEY: ${{ secrets.SWIFT_INSTITUTE_BOT_APP_PRIVATE_KEY }}
-        """
-
-    // MARK: - The [CI-059] inversion
-
-    /// The same two callers, swapped by hosting organization. This is the
-    /// whole of `[CI-059]`'s sub-org caveat: `inherit` is correct in a
-    /// layer org and wrong in a sub-org, because the sub-org's hop is
-    /// cross-org and `inherit` silently delivers no org secrets there
-    /// (`[CI-109]`). A validator that got this backwards would still pass
-    /// half the corpus.
     @Test
-    func theSecretObligationInvertsOnTheHostingOrganization() throws {
-        #expect(try Self.findings("swift-standards/swift-x", ci: Self.inheritCaller).isEmpty)
-        #expect(try Self.findings("swift-iso/swift-x", ci: Self.explicitCaller).isEmpty)
-
-        let inheritInSubOrganization = try Self.findings(
-            "swift-iso/swift-x",
-            ci: Self.inheritCaller
-        )
-        #expect(inheritInSubOrganization.map(\.rule.rawValue) == ["CI-059"])
-        #expect(inheritInSubOrganization[0].message.hasPrefix("[cross-org-inherit]"))
-
-        let explicitInLayerOrganization = try Self.findings(
-            "swift-standards/swift-x",
-            ci: Self.explicitCaller
-        )
-        #expect(explicitInLayerOrganization.map(\.rule.rawValue) == ["CI-059"])
-        #expect(explicitInLayerOrganization[0].message.hasPrefix("[same-org-explicit]"))
-    }
-
-    /// The credential set is closed in both directions: a name missing
-    /// fires, and a name beyond it fires. Both can fire on one job.
-    @Test
-    func theCrossOrganizationSetIsClosedInBothDirections() throws {
-        let caller =
-            Self.explicitCaller
-            .replacingOccurrences(
-                of: "      SWIFT_INSTITUTE_BOT_APP_ID: ${{ secrets.SWIFT_INSTITUTE_BOT_APP_ID }}\n",
-                with: ""
-            )
-            + "\n      EXTRA_TOKEN: ${{ secrets.EXTRA_TOKEN }}"
-        let findings = try Self.findings("swift-ietf/swift-x", ci: caller)
-        let classes = findings.map { $0.message.prefix { $0 != "]" } + "]" }
-        #expect(classes == ["[cross-org-missing-names]", "[cross-org-extra-names]"])
-        #expect(findings[0].message.contains("SWIFT_INSTITUTE_BOT_APP_ID"))
-        #expect(findings[1].message.contains("EXTRA_TOKEN"))
-    }
-
-    /// An exemption admits exactly one class in exactly one file. The
-    /// admitted shape is reported under `CI-059-EXEMPT`, which the
-    /// aggregation layer does not count; the near-miss — the same
-    /// repository, a *different* class — still fires as `CI-059`.
-    ///
-    /// The exemption is fixture-scoped by construction: its repository is
-    /// the harness's reporting owner, which no production sweep passes.
-    @Test
-    func anExemptionAdmitsOneClassAndSuppressesNothingElse() throws {
-        let admitted = try Self.findings(
-            "swift-institute-test/swift-exempt-explicit-caller",
-            ci: Self.explicitCaller
-        )
-        #expect(admitted.map(\.rule.rawValue) == ["CI-059-EXEMPT"])
-
-        // Same repository, same file — but omission, not explicit
-        // forwarding. A different class, so the exemption does not reach
-        // it.
-        let nearMiss = try Self.findings(
-            "swift-institute-test/swift-exempt-explicit-caller",
-            ci: Self.inheritCaller.replacingOccurrences(of: "    secrets: inherit", with: "")
-        )
-        #expect(nearMiss.map(\.rule.rawValue) == ["CI-059"])
-        #expect(nearMiss[0].message.hasPrefix("[same-org-omitted]"))
+    func theTerminalCallerNeedsNoCredentialSurface() throws {
+        #expect(try Self.findings("swift-standards/swift-x", ci: Self.terminalCaller).isEmpty)
+        #expect(try Self.findings("swift-iso/swift-x", ci: Self.terminalCaller).isEmpty)
     }
 
     // MARK: - File-level carve-out
@@ -185,7 +97,6 @@ struct CIValidationThinCallersTests {
             jobs:
               ci:
                 uses: swift-standards/.github/.github/workflows/swift-ci.yml@v1.0.0
-                secrets: inherit
               other:
                 uses: some-vendor/some-repo/.github/workflows/thing.yml@v3
             """
@@ -235,7 +146,6 @@ struct CIValidationThinCallersTests {
             jobs:
               ci:
                 uses: swift-standards/.github/.github/workflows/swift-ci.yml@main
-                secrets: inherit
               extra:
                 runs-on: ubuntu-latest
                 steps:
@@ -293,7 +203,7 @@ struct CIValidationThinCallersTests {
     func standaloneFormatAndLintWorkflowsFireOnTheirOwn() throws {
         let findings = try Self.findings(
             "swift-standards/swift-x",
-            ci: Self.inheritCaller,
+            ci: Self.terminalCaller,
             files: [
                 ".github/workflows/swift-format.yml": "name: fmt\n",
                 ".github/workflows/swiftlint.yml": "name: lint\n",
@@ -316,31 +226,24 @@ struct CIValidationThinCallersTests {
                 uses: swift-standards/.github/.github/workflows/swift-ci.yml@main
                 with:
                   integrated-docs: true
-                secrets: inherit
             """
         let findings = try Self.findings("swift-standards/swift-x", ci: caller)
             .filter { $0.rule.rawValue == "INTEGRATED-DOCS-ADMISSION" }
         #expect(findings.count == 1)
         #expect(findings[0].message.contains("integrated-docs: true"))
-        #expect(try Self.findings("swift-standards/swift-x", ci: Self.inheritCaller).isEmpty)
+        #expect(try Self.findings("swift-standards/swift-x", ci: Self.terminalCaller).isEmpty)
     }
 
     // MARK: - Registration
 
-    /// Every rule the retired script emitted has a Swift owner, and the
-    /// registry resolves each to this validator. `CI-059-EXEMPT` is
-    /// deliberately absent: it is a reporting spelling for a suppressed
-    /// `CI-059`, not a rule anything is authoritative for.
+    /// Every retained rule resolves to this validator.
     @Test
     func everyRuleResolvesToThisValidator() {
-        for rule in ["CI-030", "CI-059", "GH-REPO-074", "INTEGRATED-DOCS-ADMISSION"] {
+        for rule in ["CI-030", "GH-REPO-074", "INTEGRATED-DOCS-ADMISSION"] {
             let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(
                 for: .init(rule)
             )
             #expect(validator is GitHub.ContinuousIntegration.Validation.ThinCallers, "\(rule)")
         }
-        #expect(
-            GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-059-EXEMPT") == nil
-        )
     }
 }

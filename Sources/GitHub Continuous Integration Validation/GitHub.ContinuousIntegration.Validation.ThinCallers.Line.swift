@@ -110,20 +110,6 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
         /// `^\s*workflow_call:` — at any indent, including column 0.
         var declaresWorkflowCall: Bool { trimmed.hasPrefix("workflow_call:") }
 
-        /// `^\s+secrets:\s+inherit\s*(#.*)?$`
-        var isSecretsInherit: Bool {
-            guard indent > 0, trimmed.hasPrefix("secrets:") else { return false }
-            return value(after: "secrets:")?.beforeComment.trimmed == "inherit"
-        }
-
-        /// `^\s+secrets:\s*(#.*)?$` — the block-form opener.
-        var isSecretsBlock: Bool { indent > 0 && keyWithNoValue == "secrets" }
-
-        /// `^\s+secrets:\s*\{` — the inline-map form.
-        var isSecretsInlineMap: Bool {
-            indent > 0 && (value(after: "secrets:")?.hasPrefix("{") ?? false)
-        }
-
         /// The `uses:` target, when the line declares one with a
         /// non-empty value.
         var usesValue: String? {
@@ -156,27 +142,6 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
             return Reference(path: path, ref: ref)
         }
 
-        /// `^\s+NAME:\s*\$\{\{\s*secrets\.NAME\s*\}\}\s*(#.*)?$` — the
-        /// exact forwarding line a cross-org caller must carry per name.
-        func forwards(_ name: String) -> Bool {
-            guard indent > 0, trimmed.hasPrefix("\(name):"),
-                let value = value(after: "\(name):")?.beforeComment.trimmed,
-                value.hasPrefix("${{"), value.hasSuffix("}}")
-            else { return false }
-            let inner = value.dropFirst(3).dropLast(2).trimmed
-            return inner == "secrets.\(name)"
-        }
-
-        /// The `NAME` of a mapping entry, when the line is one.
-        var mappingKey: String? {
-            guard let separator = trimmed.firstIndex(of: ":") else { return nil }
-            let key = String(trimmed[..<separator])
-            guard !key.isEmpty,
-                key.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "_" || $0 == "-" })
-            else { return nil }
-            return key
-        }
-
         /// The text after `key`, trimmed. `nil` when the line does not
         /// open with it.
         func value(after key: String) -> String? {
@@ -202,18 +167,5 @@ extension StringProtocol {
         while let first = value.first, first == " " || first == "\t" { value = value.dropFirst() }
         while let last = value.last, last == " " || last == "\t" { value = value.dropLast() }
         return String(value)
-    }
-
-    /// Everything before a `#` that opens the string or follows
-    /// whitespace, which is YAML's own comment rule.
-    fileprivate var beforeComment: String {
-        var kept = ""
-        var previous: Character?
-        for character in self {
-            if character == "#", previous == nil || previous == " " || previous == "\t" { break }
-            kept.append(character)
-            previous = character
-        }
-        return kept
     }
 }
