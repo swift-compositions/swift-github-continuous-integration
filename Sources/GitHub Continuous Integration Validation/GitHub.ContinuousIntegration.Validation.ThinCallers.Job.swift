@@ -4,11 +4,8 @@ import GitHub_Standard
 extension GitHub.ContinuousIntegration.Validation.ThinCallers {
     /// One top-level job under `jobs:`, with its body lines.
     ///
-    /// `[CI-059]` is the reason this exists rather than the typed
-    /// document's `jobs`: the rule needs *same-job co-presence* of a
-    /// `uses:` and a `secrets:` declaration, and it must still answer on
-    /// a workflow the parser refuses. So the job set is recovered by the
-    /// same indentation walk the retired validator used.
+    /// Job boundaries support diagnostic precedence and the deleted-input
+    /// check even when the typed parser refuses a malformed caller.
     public struct Job: Sendable, Equatable {
         public let name: String
         public let lines: [Line]
@@ -52,29 +49,6 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
 }
 
 extension GitHub.ContinuousIntegration.Validation.ThinCallers.Job {
-    /// The keys of the job's block-form `secrets:` mapping, in order.
-    ///
-    /// Indentation-tracked: the children are the contiguous run of
-    /// more-indented `NAME:` lines after a bare `secrets:` opener, and the
-    /// first line at or below the opener's indent closes the block. Blank
-    /// and comment lines inside it are skipped rather than ending it.
-    public var forwardedSecretNames: [String] {
-        var names: [String] = []
-        var openerIndent: Int?
-        for line in lines {
-            if let indent = openerIndent {
-                if line.isBlankOrComment { continue }
-                if line.indent > indent {
-                    if let key = line.mappingKey { names.append(key) }
-                    continue
-                }
-                openerIndent = nil
-            }
-            if line.isSecretsBlock { openerIndent = line.indent }
-        }
-        return names
-    }
-
     /// The value of `key` inside the job's block-form `with:` mapping, as
     /// raw text with any trailing comment removed, or `nil` when `with:`
     /// or the key is absent.

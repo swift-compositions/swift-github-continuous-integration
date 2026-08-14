@@ -90,10 +90,7 @@ struct CIValidationSubOrgWrappersTests {
     }
 
     /// The thirteen authorities, partitioned by the layer wrapper they
-    /// route through. `ThinCallers` reads this same set for `[CI-059]`'s
-    /// inversion rather than restating it — two spellings of thirteen
-    /// organizations is the drift the validators manifest exists because
-    /// of.
+    /// route through.
     @Test
     func theSubOrganizationSetIsThirteenAndPartitioned() {
         #expect(
