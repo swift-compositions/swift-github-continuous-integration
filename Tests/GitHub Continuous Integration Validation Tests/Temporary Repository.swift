@@ -4,23 +4,13 @@ import GitHub_Standard
 
 @testable import GitHub_Continuous_Integration_Validation
 
-/// The packaged copy of the canonical organization manifest.
+/// The generated synthetic organization manifest.
 ///
 /// `[BRANCH-PIN-001]` is scoped by the Institute organization set. The
-/// suite reads the copy shipped at the package root, located from this
-/// source file's own path, so it does not depend on the working
-/// directory a test runner happens to use.
+/// The suite reads the same materialized bytes as the fixture corpus, so
+/// it does not depend on the working directory a test runner uses.
 enum RepositoryUnderTest {
-    /// `<package root>/.github/actions/read-orgs/orgs.yaml`.
-    static let organizationsFile: String = {
-        guard
-            let path = GitHub.ContinuousIntegration.Validation.BranchPins.Organizations
-                .locateManifest(
-                    startingAt: (#filePath as NSString).deletingLastPathComponent
-                )
-        else { fatalError("orgs manifest not found above \(#filePath)") }
-        return path
-    }()
+    static let organizationsFile = FixtureCorpus.organizationsFile
 }
 
 /// A throwaway repository-shaped directory a validator can be asked

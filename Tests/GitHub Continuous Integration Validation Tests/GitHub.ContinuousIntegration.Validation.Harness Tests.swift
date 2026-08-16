@@ -7,18 +7,13 @@ import Testing
 
 /// The Swift replacement for running `.github/scripts/tests/run.sh`.
 ///
-/// Every registered validator runs against the real fixture corpus — the
-/// same files, unmodified — and each scenario must meet the expectation
-/// its directory declares.
+/// Every registered validator runs against the generated fixture corpus.
+/// Its exact bytes are materialized before validation, and each scenario
+/// must meet the expectation its directory declares.
 @Suite
 struct CIValidationHarnessTests {
-    /// The corpus, located from this file rather than from a working
-    /// directory, so the suite behaves the same under SwiftPM, Xcode, and
-    /// CI.
     static var corpus: GitHub.ContinuousIntegration.Validation.Corpus {
-        var url = URL(fileURLWithPath: #filePath)
-        url.deleteLastPathComponent()  // → the test target directory
-        return .init(root: url.appendingPathComponent("Fixtures").path)
+        FixtureCorpus.corpus
     }
 
     @Suite
