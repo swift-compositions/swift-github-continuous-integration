@@ -62,11 +62,7 @@ let package = Package(
         ),
         .testTarget(
             name: "GitHub Continuous Integration Validation Tests",
-            dependencies: ["GitHub Continuous Integration Validation"],
-            // Read from source through `#filePath`, not bundled: the
-            // corpus is data the harness reads, and the recorded run is
-            // evidence, not a resource.
-            exclude: ["Fixtures"]
+            dependencies: ["GitHub Continuous Integration Validation"]
         ),
     ],
     swiftLanguageModes: [.v6]

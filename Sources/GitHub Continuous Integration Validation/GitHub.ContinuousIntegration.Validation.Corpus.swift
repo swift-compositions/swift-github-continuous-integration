@@ -5,10 +5,8 @@ import GitHub_Standard
 extension GitHub.ContinuousIntegration.Validation {
     /// The fixture corpus: `<root>/<rule-id>/{pass,fail,edge}/<scenario>/`.
     ///
-    /// 515 files across 68 rule directories, and they are **data**. They
-    /// are not regenerated, tidied, or edited alongside the validator
-    /// they exercise — a fixture changed in the same commit as its
-    /// predicate proves nothing. This type only reads them.
+    /// The corpus is materialized from generated Swift fixture bytes.
+    /// This type only reads the resulting repository-shaped tree.
     ///
     /// The directory name is the rule identifier, lower-cased. That is
     /// the whole binding; `tests/run.sh` needed a hand-maintained

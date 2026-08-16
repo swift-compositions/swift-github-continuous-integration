@@ -18,9 +18,7 @@ import Testing
 @Suite
 struct CIValidationWorkflowShapeTests {
     static var corpus: GitHub.ContinuousIntegration.Validation.Corpus {
-        var url = URL(fileURLWithPath: #filePath)
-        url.deleteLastPathComponent()  // → the test target directory
-        return .init(root: url.appendingPathComponent("Fixtures").path)
+        FixtureCorpus.corpus
     }
 
     /// The rules this class ports, and the script each replaces.
