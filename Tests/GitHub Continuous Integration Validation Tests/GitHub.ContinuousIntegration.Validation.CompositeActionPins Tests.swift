@@ -38,7 +38,9 @@ struct CIValidationCompositeActionPinsTests {
     ) throws -> [GitHub.ContinuousIntegration.Validation.Finding] {
         let subject = TemporaryRepository(repository: repository)
         subject.write(contents, to: ".github/workflows/\(file)")
-        return try GitHub.ContinuousIntegration.Validation.CompositeActionPins().findings(in: subject.subject)
+        return try GitHub.ContinuousIntegration.Validation.CompositeActionPins().findings(
+            in: subject.subject
+        )
     }
 
     @Suite
@@ -143,4 +145,4 @@ struct CIValidationCompositeActionPinsTests {
         }
     }
 
-    }
+}

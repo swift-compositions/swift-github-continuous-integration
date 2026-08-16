@@ -1,19 +1,20 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-032]` — every job in every intra-Institute `workflow_call`
-    /// reusable must carry the private-repository visibility gate.
+    /// reusable must carry its explicit repository-visibility gate.
     ///
-    /// The gate is `!github.event.repository.private` appearing anywhere
-    /// in the job's `if:`, so both the simple form
+    /// Public package CI uses `!github.event.repository.private` appearing
+    /// anywhere in the job's `if:`, so both the simple form
     /// (`if: ${{ !github.event.repository.private }}`) and the compound
     /// form (`if: ${{ always() && !github.event.repository.private }}`)
-    /// satisfy it. Detection is deliberately a substring test rather than
-    /// an expression parse: the rule's Statement is about the presence of
-    /// the term, and a validator narrower or broader than its Statement
-    /// is a Statement amendment, not a validator change.
+    /// satisfy it. The terminal `private-verification.yml` reusable has the
+    /// inverse contract: every work and aggregate job must contain
+    /// `github.event.repository.private` without its negated spelling. This
+    /// keeps public package CI out of private repositories while admitting
+    /// the separately owned private verification surface only there.
     ///
     /// Scope and carve-outs:
     ///
@@ -30,8 +31,9 @@ extension GitHub.ContinuousIntegration.Validation {
     /// - `if: false` is an explicitly disabled job, in either the boolean
     ///   or the string spelling.
     public struct VisibilityGate: Validator {
-        /// The term whose presence *is* the gate.
-        public static let gate = "!github.event.repository.private"
+        public static let publicGate = "!github.event.repository.private"
+        public static let privateGate = "github.event.repository.private"
+        public static let privateVerificationDocument = "private-verification.yml"
 
         public let rules: [Rule] = ["CI-032"]
         public let retiredScript: String? = ".github/scripts/validate-visibility-gate.py"
@@ -43,20 +45,41 @@ extension GitHub.ContinuousIntegration.Validation {
             let (documents, refusals) = try subject.workflows(citing: rule)
             var findings = refusals
             for document in documents where Self.isReusable(document) {
+                let gate = Self.gate(for: document)
                 for job in document.jobs {
                     guard !Self.isPureRouting(job) else { continue }
                     let clause = Self.clause(job)
                     guard !Self.isDisabled(clause) else { continue }
                     let text = Self.text(of: clause)
-                    guard !text.contains(Self.gate) else { continue }
+                    guard !Self.contains(gate: gate, in: text) else { continue }
                     findings.append(
                         Finding(
-                            repository: subject.repository, rule: rule,
+                            repository: subject.repository,
+                            rule: rule,
                             message: Self.message(
-                                document: document.name, job: job.name, clause: text)))
+                                document: document.name,
+                                job: job.name,
+                                clause: text,
+                                gate: gate
+                            )
+                        )
+                    )
                 }
             }
             return findings
+        }
+
+        static func gate(
+            for document: GitHub.ContinuousIntegration.Workflow.Document
+        ) -> String {
+            document.name == privateVerificationDocument ? privateGate : publicGate
+        }
+
+        static func contains(gate: String, in clause: String) -> Bool {
+            if gate == privateGate {
+                return clause.contains(privateGate) && !clause.contains(publicGate)
+            }
+            return clause.contains(publicGate)
         }
 
         /// Whether the document declares a `workflow_call` trigger, in
@@ -83,7 +106,9 @@ extension GitHub.ContinuousIntegration.Validation {
             job.body["uses"] != nil && job.body["steps"] == nil && job.body["runs-on"] == nil
         }
 
-        static func clause(_ job: GitHub.ContinuousIntegration.Workflow.Job) -> GitHub.ContinuousIntegration.Workflow.YAML.Node? {
+        static func clause(
+            _ job: GitHub.ContinuousIntegration.Workflow.Job
+        ) -> GitHub.ContinuousIntegration.Workflow.YAML.Node? {
             job.body["if"]
         }
 
@@ -114,7 +139,12 @@ extension GitHub.ContinuousIntegration.Validation {
             }
         }
 
-        static func message(document: String, job: String, clause: String) -> String {
+        static func message(
+            document: String,
+            job: String,
+            clause: String,
+            gate: String
+        ) -> String {
             """
             \(document): job \(job.pythonRepresentation) missing visibility gate \
             per [CI-032] — `if:` must contain `\(gate)` (simple or compound form); \

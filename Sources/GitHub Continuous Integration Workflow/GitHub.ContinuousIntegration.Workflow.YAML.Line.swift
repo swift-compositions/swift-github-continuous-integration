@@ -1,3 +1,4 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
 
@@ -31,16 +32,34 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
         }
 
         static func scan(_ text: String) -> [Self] {
-            text.split(separator: "\n", omittingEmptySubsequences: false)
+            // Normalise line endings *before* splitting. Swift's `Character`
+            // is an extended grapheme cluster, and CR+LF is itself one
+            // grapheme cluster — so `text.split(separator: "\n")` on a
+            // CRLF document matches nothing and the entire document
+            // collapses into a single "line". This is not
+            // platform-conditional code reading a platform fact; it is a
+            // Unicode-model fact that fires identically on every OS
+            // whenever the *input bytes* happen to be CRLF, which in
+            // practice means every Windows `git checkout` of an
+            // LF-committed workflow file (default `core.autocrlf`).
+            // Normalizing first (CRLF, then any bare CR) removes both the
+            // collapse and the per-line trailing-`\r` case entirely, so
+            // there is nothing left for `raw`/`content` to strip.
+            let normalized =
+                text
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+            return normalized.split(separator: "\n", omittingEmptySubsequences: false)
                 .enumerated()
                 .map { offset, raw in
-                    let raw = raw.hasSuffix("\r") ? String(raw.dropLast()) : String(raw)
+                    let raw = String(raw)
                     return Self(
                         number: offset + 1,
                         indent: raw.prefix(while: { $0 == " " }).count,
                         raw: raw,
                         content: stripComment(raw).trimmedTrailing()
-                            .drop(while: { $0 == " " }).description)
+                            .drop(while: { $0 == " " }).description
+                    )
                 }
         }
 
@@ -86,6 +105,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                 case "\"", "'": quote = character
                 case "[", "{": depth += 1
                 case "]", "}": depth -= 1
+
                 case ":" where depth == 0:
                     let next = index + 1
                     guard next == characters.count || characters[next] == " " else { continue }
@@ -93,6 +113,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                     guard !key.isEmpty else { return nil }
                     let value = String(characters[next...]).drop(while: { $0 == " " })
                     return (key, value.description.trimmedTrailing())
+
                 default: continue
                 }
             }
@@ -120,6 +141,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                     }
                 }
                 return result
+
             case "\"":
                 var result = ""
                 var escaped = false
@@ -140,6 +162,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                     }
                 }
                 return result
+
             default:
                 return nil
             }

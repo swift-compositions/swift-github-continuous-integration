@@ -1,6 +1,8 @@
 import GitHub_Continuous_Integration
 import GitHub_Standard
 
+// swiftlint:disable no_any_protocol_existential
+// This file owns the intentionally type-erased heterogeneous validator registry.
 extension GitHub.ContinuousIntegration.Validation {
     /// Rule identifier → validator.
     ///
@@ -58,3 +60,4 @@ extension GitHub.ContinuousIntegration.Validation {
         }
     }
 }
+// swiftlint:enable no_any_protocol_existential

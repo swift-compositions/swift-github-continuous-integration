@@ -1,6 +1,6 @@
 import GitHub_Continuous_Integration
-import GitHub_Standard
 import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation {
     /// Rendering that exists only because the retired Python corpus
@@ -29,7 +29,8 @@ extension GitHub.ContinuousIntegration.Validation {
         /// form when the value contains a single quote but no double
         /// quote.
         public static func quoted(_ value: String) -> String {
-            let escaped = value
+            let escaped =
+                value
                 .replacingOccurrences(of: "\\", with: "\\\\")
                 .replacingOccurrences(of: "\n", with: "\\n")
                 .replacingOccurrences(of: "\t", with: "\\t")
@@ -51,7 +52,8 @@ extension GitHub.ContinuousIntegration.Validation {
         /// Only the scalar shapes the manifest schema admits are spelled
         /// out; a mapping or a sequence in a scalar position is already a
         /// schema violation the caller reports differently.
-        public static func value(_ node: GitHub.ContinuousIntegration.Workflow.YAML.Node) -> String {
+        public static func value(_ node: GitHub.ContinuousIntegration.Workflow.YAML.Node) -> String
+        {
             switch node {
             case .null: "None"
             case .boolean(let value): value ? "True" : "False"
@@ -65,7 +67,9 @@ extension GitHub.ContinuousIntegration.Validation {
 
         /// The Python type name `type(x).__name__` reports for a parsed
         /// YAML value.
-        public static func typeName(_ node: GitHub.ContinuousIntegration.Workflow.YAML.Node) -> String {
+        public static func typeName(
+            _ node: GitHub.ContinuousIntegration.Workflow.YAML.Node
+        ) -> String {
             switch node {
             case .null: "NoneType"
             case .boolean: "bool"
@@ -82,7 +86,8 @@ extension GitHub.ContinuousIntegration.Validation {
         /// The retired checks spell emptiness as truthiness, so an absent
         /// key, an explicit `null`, and `''` are one case and must stay
         /// one case.
-        public static func isTruthy(_ node: GitHub.ContinuousIntegration.Workflow.YAML.Node) -> Bool {
+        public static func isTruthy(_ node: GitHub.ContinuousIntegration.Workflow.YAML.Node) -> Bool
+        {
             switch node {
             case .null: false
             case .boolean(let value): value

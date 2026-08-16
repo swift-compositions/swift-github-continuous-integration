@@ -54,63 +54,6 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
             """
         }
 
-        public static func sameOrganizationExplicit(job: String) -> String {
-            """
-            .github/workflows/ci.yml job `\(job)` invokes an intra-Institute \
-            reusable with explicit `secrets:` forwarding — per the #92 ruling \
-            same-org callers MUST use `secrets: inherit`; explicit per-secret \
-            sets are forbidden. Org-level secrets per [CI-060] obviate explicit \
-            forwarding, which drifts at every new secret addition.
-            """
-        }
-
-        public static func sameOrganizationOmitted(job: String) -> String {
-            """
-            .github/workflows/ci.yml job `\(job)` invokes an intra-Institute \
-            reusable without `secrets: inherit` — per [CI-059] and the #92 ruling \
-            every same-org `uses:` invocation of an intra-Institute reusable MUST \
-            include `secrets: inherit` (single canonical shape per [CI-031], \
-            universal across consumers regardless of dependency-graph visibility).
-            """
-        }
-
-        public static func crossOrganizationInherit(job: String) -> String {
-            """
-            .github/workflows/ci.yml job `\(job)` is sub-org-hosted and uses \
-            `secrets: inherit` — per the #92 ruling this hop is cross-org and \
-            inherit silently delivers no org secrets ([CI-109]). Replace with the \
-            explicit `secrets:` block forwarding \(closedSet) as \
-            `NAME: ${{ secrets.NAME }}` lines.
-            """
-        }
-
-        public static func crossOrganizationMissing(job: String, names: [String]) -> String {
-            """
-            .github/workflows/ci.yml job `\(job)` is sub-org-hosted and \
-            explicit-forwards secrets but is missing \(names.joined(separator: ", ")) — \
-            per the #92 ruling the closed credential set MUST be forwarded in full \
-            (`NAME: ${{ secrets.NAME }}` per name; [CI-109]).
-            """
-        }
-
-        public static func crossOrganizationExtra(job: String, names: [String]) -> String {
-            """
-            .github/workflows/ci.yml job `\(job)` is sub-org-hosted and forwards \
-            \(names.joined(separator: ", ")) beyond the closed set — per the #92 \
-            ruling the cross-org transport is exactly \(closedSet); widening it is \
-            a ruling, not a caller edit.
-            """
-        }
-
-        public static func crossOrganizationOmitted(job: String) -> String {
-            """
-            .github/workflows/ci.yml job `\(job)` is sub-org-hosted and invokes an \
-            intra-Institute reusable without any `secrets:` — per the #92 ruling \
-            it MUST explicit-forward \(closedSet) ([CI-109]; inherit is \
-            same-org-only and omission leaves resolve uncredentialed).
-            """
-        }
-
         /// The message deliberately still names `generate-caller.py`, the
         /// script this port deletes. Byte-identity with the retired output
         /// is the unwaived floor of the single measured comparison, and
@@ -125,10 +68,6 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
             rejects an undeclared input, so this caller fails at run time. \
             Regenerate it with generate-caller.py.
             """
-        }
-
-        static var closedSet: String {
-            GitHub.ContinuousIntegration.Validation.ThinCallers.crossOrganizationSecrets.joined(separator: ", ")
         }
     }
 }

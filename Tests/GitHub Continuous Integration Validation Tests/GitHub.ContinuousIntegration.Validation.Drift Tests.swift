@@ -1,7 +1,7 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Workflow
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 import Testing
 
 @testable import GitHub_Continuous_Integration_Validation
@@ -74,14 +74,14 @@ extension CIValidationDriftTests {
     struct `Weekly Report Surfaces` {
         typealias Subject = GitHub.ContinuousIntegration.Validation.Drift.LintValidatorsWeekly
 
-        
         /// The sanity floor. If discovery ever returns nothing, the
         /// assertion above is vacuously true — a zero from the wrong root
         /// is not evidence.
-        
+
         @Test func `the synthetic base is itself clean`() throws {
             let gaps = try Subject.gaps(
-                in: CIValidationDriftTests.document(CIValidationDriftTests.weeklyBase))
+                in: CIValidationDriftTests.document(CIValidationDriftTests.weeklyBase)
+            )
             #expect(gaps.isEmpty)
         }
 
@@ -105,7 +105,9 @@ extension CIValidationDriftTests {
             ),
         ])
         func `removing one leg from one surface names that job and that surface`(
-            _ original: String, _ replacement: String, _ surface: Subject.Surface
+            _ original: String,
+            _ replacement: String,
+            _ surface: Subject.Surface
         ) throws {
             let text = CIValidationDriftTests.weeklyBase
                 .replacingOccurrences(of: original, with: replacement)
@@ -121,7 +123,8 @@ extension CIValidationDriftTests {
         @Test func `an unwired leg is caught on all five surfaces`() throws {
             let text = CIValidationDriftTests.weeklyBase.replacingOccurrences(
                 of: "  scan-beta:",
-                with: "  scan-gamma:\n    uses: ./.github/workflows/validate-gamma.yml\n  scan-beta:"
+                with:
+                    "  scan-gamma:\n    uses: ./.github/workflows/validate-gamma.yml\n  scan-beta:"
             )
             let gaps = try Subject.gaps(in: CIValidationDriftTests.document(text))
             let surfaces = Set(gaps.filter { $0.job == "scan-gamma" }.map(\.surface))
@@ -129,7 +132,9 @@ extension CIValidationDriftTests {
         }
 
         @Test func `a workflow with no report job is a defect and not a clean run`() throws {
-            let document = try CIValidationDriftTests.document("jobs:\n  scan-alpha:\n    uses: x\n")
+            let document = try CIValidationDriftTests.document(
+                "jobs:\n  scan-alpha:\n    uses: x\n"
+            )
             #expect(throws: GitHub.ContinuousIntegration.Validation.EnvironmentDefect.self) {
                 _ = try Subject.gaps(in: document)
             }
@@ -151,11 +156,13 @@ extension CIValidationDriftTests {
 
         static let scheduled = ["scan-alpha": "scan-alpha.yml", "scan-beta": "scan-beta.yml"]
 
-        
         /// The sanity floor for the same reason as above.
-        
+
         @Test func `the synthetic base is itself clean`() {
-            #expect(Subject.drift(scheduled: Self.scheduled, watched: ["scan-alpha", "scan-beta"]).isEmpty)
+            #expect(
+                Subject.drift(scheduled: Self.scheduled, watched: ["scan-alpha", "scan-beta"])
+                    .isEmpty
+            )
         }
 
         @Test func `a scheduled workflow absent from the watch list is caught`() {
@@ -166,7 +173,9 @@ extension CIValidationDriftTests {
 
         @Test func `a watch entry naming nothing scheduled is caught`() {
             let gaps = Subject.drift(
-                scheduled: Self.scheduled, watched: ["scan-alpha", "scan-beta", "scan-gamma"])
+                scheduled: Self.scheduled,
+                watched: ["scan-alpha", "scan-beta", "scan-gamma"]
+            )
             let flagged = Set(gaps.filter { $0.surface == .stale }.map(\.name))
             #expect(flagged == ["scan-gamma"])
         }
@@ -177,13 +186,21 @@ extension CIValidationDriftTests {
         @Test func `both directions are reported at once`() {
             let gaps = Subject.drift(
                 scheduled: ["scan-alpha": "a.yml", "scan-delta": "d.yml"],
-                watched: ["scan-alpha", "scan-beta"])
-            #expect(Set(gaps.map { [$0.name, $0.surface.rawValue] })
-                == [["scan-delta", "missing-from-watch-list"], ["scan-beta", "stale-watch-entry"]])
+                watched: ["scan-alpha", "scan-beta"]
+            )
+            #expect(
+                Set(gaps.map { [$0.name, $0.surface.rawValue] })
+                    == [
+                        ["scan-delta", "missing-from-watch-list"],
+                        ["scan-beta", "stale-watch-entry"],
+                    ]
+            )
         }
 
         @Test func `an alert workflow without a workflows list is a defect`() throws {
-            let document = try CIValidationDriftTests.document("on:\n  workflow_run:\n    types: [completed]\n")
+            let document = try CIValidationDriftTests.document(
+                "on:\n  workflow_run:\n    types: [completed]\n"
+            )
             #expect(throws: GitHub.ContinuousIntegration.Validation.EnvironmentDefect.self) {
                 _ = try Subject.watched(in: document)
             }

@@ -1,7 +1,7 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Workflow
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 
 extension GitHub.ContinuousIntegration.Validation.Drift {
     /// `[SCHEDULED-WORKFLOW-ALERT-DRIFT]` — the alert workflow's watch
@@ -33,7 +33,9 @@ extension GitHub.ContinuousIntegration.Validation.Drift {
     public struct ScheduledWorkflowAlert: GitHub.ContinuousIntegration.Validation.Validator {
         public typealias Finding = GitHub.ContinuousIntegration.Validation.Finding
 
-        public let rules: [GitHub.ContinuousIntegration.Validation.Rule] = ["SCHEDULED-WORKFLOW-ALERT-DRIFT"]
+        public let rules: [GitHub.ContinuousIntegration.Validation.Rule] = [
+            "SCHEDULED-WORKFLOW-ALERT-DRIFT"
+        ]
         public let retiredScript: String? =
             ".github/scripts/check-scheduled-workflow-alert-parity.py"
 
@@ -63,7 +65,10 @@ extension GitHub.ContinuousIntegration.Validation.Drift {
             // and braces rather than load-bearing. Both narrowings are
             // the retired script's; widening either would change which
             // documents the rule reads.
-            guard let names = try? FileManager.default.contentsOfDirectory(atPath: directory) else {
+            let names: [String]
+            do {
+                names = try FileManager.default.contentsOfDirectory(atPath: directory)
+            } catch {
                 throw .unreadableFile(path: directory)
             }
             var scheduled: [String: String] = [:]
@@ -81,8 +86,10 @@ extension GitHub.ContinuousIntegration.Validation.Drift {
 
             return Self.drift(scheduled: scheduled, watched: watched).map { gap in
                 Finding(
-                    repository: subject.repository, rule: rules[0],
-                    message: "\(gap.surface.rawValue): \(gap.message)")
+                    repository: subject.repository,
+                    rule: rules[0],
+                    message: "\(gap.surface.rawValue): \(gap.message)"
+                )
             }
         }
 
@@ -98,19 +105,25 @@ extension GitHub.ContinuousIntegration.Validation.Drift {
             for name in scheduled.keys.sorted() where !watched.contains(name) {
                 gaps.append(
                     Gap(
-                        name: name, surface: .missing,
+                        name: name,
+                        surface: .missing,
                         message: "'\(scheduled[name] ?? "")' has a schedule: trigger (workflow "
                             + "name '\(name)') but is absent from "
                             + "alert-scheduled-workflow-failure.yml's on.workflow_run.workflows "
-                            + "list"))
+                            + "list"
+                    )
+                )
             }
             for name in watched.sorted() where scheduled[name] == nil {
                 gaps.append(
                     Gap(
-                        name: name, surface: .stale,
+                        name: name,
+                        surface: .stale,
                         message: "'\(name)' is listed in alert-scheduled-workflow-failure.yml's "
                             + "on.workflow_run.workflows list but no workflow in the workflows "
-                            + "directory currently has a schedule: trigger with that name"))
+                            + "directory currently has a schedule: trigger with that name"
+                    )
+                )
             }
             return gaps
         }
@@ -123,15 +136,18 @@ extension GitHub.ContinuousIntegration.Validation.Drift {
         ) throws(GitHub.ContinuousIntegration.Validation.EnvironmentDefect) -> Set<String> {
             guard let mapping = alert.mapping, let triggers = triggers(of: mapping) else {
                 throw .missingSupportFile(
-                    path: "alert workflow's on: block has no workflow_run: mapping")
+                    path: "alert workflow's on: block has no workflow_run: mapping"
+                )
             }
             guard let run = triggers["workflow_run"]?.mapping else {
                 throw .missingSupportFile(
-                    path: "alert workflow's on: block has no workflow_run: mapping")
+                    path: "alert workflow's on: block has no workflow_run: mapping"
+                )
             }
             guard let workflows = run["workflows"]?.sequence else {
                 throw .missingSupportFile(
-                    path: "alert workflow's on.workflow_run has no workflows: list")
+                    path: "alert workflow's on.workflow_run has no workflows: list"
+                )
             }
             return Set(workflows.compactMap(\.text))
         }
@@ -144,7 +160,9 @@ extension GitHub.ContinuousIntegration.Validation.Drift {
         /// `validate_lib.parse_on_block`. A reader that skipped the
         /// second step would see no triggers on any workflow and report
         /// perfect health.
-        static func triggers(of mapping: GitHub.ContinuousIntegration.Workflow.YAML.Mapping) -> GitHub.ContinuousIntegration.Workflow.YAML.Mapping? {
+        static func triggers(
+            of mapping: GitHub.ContinuousIntegration.Workflow.YAML.Mapping
+        ) -> GitHub.ContinuousIntegration.Workflow.YAML.Mapping? {
             (mapping["on"] ?? mapping[node: .boolean(true)])?.mapping
         }
 
@@ -153,8 +171,11 @@ extension GitHub.ContinuousIntegration.Validation.Drift {
         /// because a checker that skipped what it could not read would
         /// under-report the scheduled set and call the watch list clean.
         static func parse(
-            _ text: String, at path: String
-        ) throws(GitHub.ContinuousIntegration.Validation.EnvironmentDefect) -> GitHub.ContinuousIntegration.Workflow.YAML.Node {
+            _ text: String,
+            at path: String
+        ) throws(GitHub.ContinuousIntegration.Validation.EnvironmentDefect)
+            -> GitHub.ContinuousIntegration.Workflow.YAML.Node
+        {
             do throws(GitHub.ContinuousIntegration.Workflow.YAML.Error) {
                 return try GitHub.ContinuousIntegration.Workflow.YAML.Parser.parse(text)
             } catch {

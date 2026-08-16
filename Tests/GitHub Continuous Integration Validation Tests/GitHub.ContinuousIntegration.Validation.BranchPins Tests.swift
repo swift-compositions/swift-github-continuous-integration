@@ -30,7 +30,9 @@ struct CIValidationBranchPinsTests {
         """
     }
 
-    static func validator(baseline: String? = nil) -> GitHub.ContinuousIntegration.Validation.BranchPins {
+    static func validator(
+        baseline: String? = nil
+    ) -> GitHub.ContinuousIntegration.Validation.BranchPins {
         GitHub.ContinuousIntegration.Validation.BranchPins(
             organizationsFile: RepositoryUnderTest.organizationsFile,
             baselineFile: baseline
@@ -223,16 +225,38 @@ struct CIValidationBranchPinsTests {
         }
 
         @Test func `only root manifests are scanned`() {
-            #expect(GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName("Package.swift"))
-            #expect(GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName("Package@swift-6.3.swift"))
-            #expect(!GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName("PackageDescription.swift"))
-            #expect(!GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName("Package@swift-next.swift"))
+            #expect(
+                GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName(
+                    "Package.swift"
+                )
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName(
+                    "Package@swift-6.3.swift"
+                )
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName(
+                    "PackageDescription.swift"
+                )
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.BranchPins.isRootManifestName(
+                    "Package@swift-next.swift"
+                )
+            )
         }
 
         @Test func `only a two segment github url names an organization`() {
             let organization = GitHub.ContinuousIntegration.Validation.BranchPins.gitHubOrganization
-            #expect(organization("https://github.com/example-organization-one/x") == "example-organization-one")
-            #expect(organization("https://github.com/example-organization-one/x.git") == "example-organization-one")
+            #expect(
+                organization("https://github.com/example-organization-one/x")
+                    == "example-organization-one"
+            )
+            #expect(
+                organization("https://github.com/example-organization-one/x.git")
+                    == "example-organization-one"
+            )
             #expect(organization("https://github.com/example-organization-one/x/y") == nil)
             #expect(organization("https://gitlab.com/example-organization-one/x") == nil)
         }
@@ -247,8 +271,10 @@ struct CIValidationBranchPinsTests {
             let repository = TemporaryRepository()
             repository.write("dependencies: []", to: "Package.swift")
             #expect(throws: GitHub.ContinuousIntegration.Validation.EnvironmentDefect.self) {
-                try GitHub.ContinuousIntegration.Validation.BranchPins(organizationsFile: "/nowhere/orgs.yaml")
-                    .findings(in: repository.subject)
+                try GitHub.ContinuousIntegration.Validation.BranchPins(
+                    organizationsFile: "/nowhere/orgs.yaml"
+                )
+                .findings(in: repository.subject)
             }
         }
 
@@ -258,9 +284,10 @@ struct CIValidationBranchPinsTests {
             // `.github/actions/read-orgs/orgs.yaml`. This asserts the
             // schema reader: active records are in, archived and foreign
             // names are out.
-            let organizations = try GitHub.ContinuousIntegration.Validation.BranchPins.Organizations.read(
-                at: RepositoryUnderTest.organizationsFile
-            )
+            let organizations = try GitHub.ContinuousIntegration.Validation.BranchPins.Organizations
+                .read(
+                    at: RepositoryUnderTest.organizationsFile
+                )
             #expect(organizations.contains("example-organization-one"))
             #expect(organizations.contains("example-organization-two"))
             #expect(organizations.contains("example-organization-meta"))

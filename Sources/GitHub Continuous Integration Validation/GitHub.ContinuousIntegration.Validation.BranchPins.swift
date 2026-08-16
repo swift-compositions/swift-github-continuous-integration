@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[BRANCH-PIN-001]` — an Institute dependency must not be pinned to
@@ -100,7 +100,12 @@ extension GitHub.ContinuousIntegration.Validation {
         /// manifests are out of scope — this rule is about what a
         /// repository declares as its own dependencies.
         static func manifests(in root: String) -> [String] {
-            let names = (try? FileManager.default.contentsOfDirectory(atPath: root)) ?? []
+            let names: [String]
+            do {
+                names = try FileManager.default.contentsOfDirectory(atPath: root)
+            } catch {
+                return []
+            }
             return names.filter(isRootManifestName).sorted()
         }
 
@@ -121,8 +126,27 @@ extension GitHub.ContinuousIntegration.Validation {
         /// `https` URL in the file. Removed spans become spaces rather
         /// than vanishing, so offsets in the surviving code stay stable
         /// and tokens never fuse across a removal.
+        ///
+        /// Normalizes CRLF and bare CR to LF *before* the character-array
+        /// conversion below. `Array(text)` decomposes into extended
+        /// grapheme clusters, and CR+LF is itself one cluster — so every
+        /// `character == "\n"` / `!= "\n"` comparison in this scan would
+        /// never match a CRLF line ending. Concretely, the `//` line-
+        /// comment loop below hunts for the next `"\n"` to know where the
+        /// comment ends; on CRLF input it would never find one and
+        /// consume the *entire rest of the file* as comment starting from
+        /// the first `//` — which for a typical `// swift-tools-version:`
+        /// header line is the very first line, blanking out every real
+        /// `.package(...)` declaration this rule exists to scan. Manifest
+        /// text read from a checkout is exactly `text` here (this rule
+        /// reads bytes directly, not through the typed YAML reader), so a
+        /// Windows checkout's CRLF-converted `Package.swift` hit this.
         static func strippingComments(_ text: String) -> String {
-            let source = Array(text)
+            let normalized =
+                text
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+            let source = Array(normalized)
             var output = source
             var index = 0
             var inString = false

@@ -1,6 +1,6 @@
+import Foundation
 import GitHub_Continuous_Integration
 import GitHub_Standard
-import Foundation
 
 extension GitHub.ContinuousIntegration.Validation {
     /// `[CI-117]` — a self-referential composite-action `uses:` must be
@@ -121,13 +121,28 @@ extension GitHub.ContinuousIntegration.Validation {
                 && reference.allSatisfy { ("0"..."9").contains($0) || ("a"..."f").contains($0) }
         }
 
-        /// Physical lines, with a trailing carriage return removed and a
-        /// final empty line dropped — the line numbering a reader sees in
-        /// an editor and in a diff.
+        /// Physical lines, with a final empty line dropped — the line
+        /// numbering a reader sees in an editor and in a diff.
+        ///
+        /// `text` is the raw, unparsed file (this rule reads bytes
+        /// directly via `FileManager`, not the typed `YAML.Document`), so
+        /// it normalizes CRLF and bare CR to LF itself before splitting.
+        /// Swift's `Character` is an extended grapheme cluster and CR+LF
+        /// is itself one, so splitting on `"\n"` alone silently matches
+        /// nothing on CRLF input and the whole file collapses into a
+        /// single pseudo-line — the same defect class fixed in
+        /// `YAML.Line.scan`.
         static func lines(of text: String) -> [Substring] {
-            var lines = text.split(separator: "\n", omittingEmptySubsequences: false)
+            let normalized =
+                text
+                .replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+            var lines = normalized.split(
+                separator: "\n",
+                omittingEmptySubsequences: false
+            )
             if lines.last?.isEmpty == true { lines.removeLast() }
-            return lines.map { $0.hasSuffix("\r") ? $0.dropLast() : $0 }
+            return lines
         }
 
         // MARK: - Exemptions

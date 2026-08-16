@@ -45,7 +45,9 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
         private static func integer(_ text: String) -> Int? {
             var body = Substring(text)
             var negative = false
-            if body.first == "+" { body = body.dropFirst() } else if body.first == "-" {
+            if body.first == "+" {
+                body = body.dropFirst()
+            } else if body.first == "-" {
                 negative = true
                 body = body.dropFirst()
             }

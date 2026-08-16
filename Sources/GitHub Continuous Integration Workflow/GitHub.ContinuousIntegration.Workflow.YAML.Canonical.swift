@@ -25,16 +25,22 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
             switch node {
             case .null:
                 return "null"
+
             case .boolean(let value):
                 return value ? "true" : "false"
+
             case .integer(let value):
                 return String(value)
+
             case .number(let value):
                 return String(value)
+
             case .text(let value):
                 return quoted(value)
+
             case .sequence(let elements):
                 return "[" + elements.map(json).joined(separator: ",") + "]"
+
             case .mapping(let mapping):
                 let members = mapping.entries
                     .map { (key(from: $0.key), json($0.value)) }
@@ -64,8 +70,10 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
                 case "\n": result += "\\n"
                 case "\r": result += "\\r"
                 case "\t": result += "\\t"
+
                 case let scalar where scalar.value < 0x20:
                     result += "\\u" + hexadecimal(scalar.value)
+
                 case let scalar:
                     result.unicodeScalars.append(scalar)
                 }

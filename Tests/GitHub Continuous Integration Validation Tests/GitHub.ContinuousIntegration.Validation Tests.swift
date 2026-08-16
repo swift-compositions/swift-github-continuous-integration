@@ -10,7 +10,10 @@ struct CIValidationTests {
     struct Unit {
         @Test func `finding encodes as three tab separated columns`() {
             let finding = GitHub.ContinuousIntegration.Validation.Finding(
-                repository: "swift-institute/.github", rule: "CI-105", message: "ci.yml: broken")
+                repository: "swift-institute/.github",
+                rule: "CI-105",
+                message: "ci.yml: broken"
+            )
             #expect(finding.tsv == "swift-institute/.github\tCI-105\tci.yml: broken")
         }
 
@@ -20,14 +23,24 @@ struct CIValidationTests {
 
         @Test func `environment defect exits two`() {
             let run = GitHub.ContinuousIntegration.Validation.Run(
-                findings: [], defect: .unreadableSubject(root: "/nowhere"))
+                findings: [],
+                defect: .unreadableSubject(root: "/nowhere")
+            )
             #expect(run.exitCode == 2)
-            #expect(run.exitCode == GitHub.ContinuousIntegration.Validation.EnvironmentDefect.exitCode)
+            #expect(
+                run.exitCode == GitHub.ContinuousIntegration.Validation.EnvironmentDefect.exitCode
+            )
         }
 
         @Test func `corpus directory resolves to its registered spelling`() {
-            #expect(GitHub.ContinuousIntegration.Validation.Registry.rule(forCorpusDirectory: "ci-105") == "CI-105")
-            #expect(GitHub.ContinuousIntegration.Validation.Registry.rule(forCorpusDirectory: "ci-999") == nil)
+            #expect(
+                GitHub.ContinuousIntegration.Validation.Registry.rule(forCorpusDirectory: "ci-105")
+                    == "CI-105"
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.Registry.rule(forCorpusDirectory: "ci-999")
+                    == nil
+            )
         }
     }
 
@@ -37,7 +50,10 @@ struct CIValidationTests {
             // Otherwise the aggregation step reads a wrapped sentence as
             // extra columns.
             let finding = GitHub.ContinuousIntegration.Validation.Finding(
-                repository: "r", rule: "CI-105", message: "one\ttwo\nthree")
+                repository: "r",
+                rule: "CI-105",
+                message: "one\ttwo\nthree"
+            )
             #expect(finding.tsv == "r\tCI-105\tone two three")
             #expect(finding.tsv.filter { $0 == "\t" }.count == 2)
         }
@@ -58,13 +74,16 @@ struct CIValidationTests {
                 .init(repository: "r", rule: "CI-105", message: "a"),
                 .init(repository: "r", rule: "CI-105", message: "b"),
             ])
-            #expect(run.exitCode != GitHub.ContinuousIntegration.Validation.EnvironmentDefect.exitCode)
+            #expect(
+                run.exitCode != GitHub.ContinuousIntegration.Validation.EnvironmentDefect.exitCode
+            )
         }
 
         @Test func `a missing subject root is a defect not a clean result`() {
             let run = GitHub.ContinuousIntegration.Validation.Run.validate(
                 GitHub.ContinuousIntegration.Validation.ContinueOnError(),
-                of: .init(repository: "r", root: "/nonexistent-subject-root"))
+                of: .init(repository: "r", root: "/nonexistent-subject-root")
+            )
             // No workflows directory means no findings, and that is a
             // legitimate clean answer — absence of a subject tree is not
             // by itself unreadable.
@@ -86,7 +105,9 @@ struct CIValidationTests {
 
         @Test func `every registered rule resolves back to its validator`() {
             for rule in GitHub.ContinuousIntegration.Validation.Registry.rules {
-                #expect(GitHub.ContinuousIntegration.Validation.Registry.validator(for: rule) != nil)
+                #expect(
+                    GitHub.ContinuousIntegration.Validation.Registry.validator(for: rule) != nil
+                )
             }
         }
     }

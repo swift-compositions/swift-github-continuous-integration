@@ -46,8 +46,10 @@ extension GitHub.ContinuousIntegration.Validation {
             }
             return [
                 Finding(
-                    repository: subject.repository, rule: rules[0],
-                    message: Self.message(organization: organization))
+                    repository: subject.repository,
+                    rule: rules[0],
+                    message: Self.message(organization: organization)
+                )
             ]
         }
 
@@ -72,7 +74,8 @@ extension GitHub.ContinuousIntegration.Validation {
         }
 
         static func message(organization: String) -> String {
-            let parent = foundationsSubOrganizations.contains(organization)
+            let parent =
+                foundationsSubOrganizations.contains(organization)
                 ? "swift-foundations" : "swift-standards"
             return """
                 .github/workflows/swift-ci.yml EXISTS at sub-org \

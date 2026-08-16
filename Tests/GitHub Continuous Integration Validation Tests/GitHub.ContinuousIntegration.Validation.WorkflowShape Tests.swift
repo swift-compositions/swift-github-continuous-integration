@@ -1,7 +1,7 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Workflow
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Workflow
+import GitHub_Standard
 import Testing
 
 @testable import GitHub_Continuous_Integration_Validation
@@ -42,7 +42,9 @@ struct CIValidationWorkflowShapeTests {
         @Test func `scalars render as Python names, not Swift ones`() {
             // The finding quotes what PyYAML loaded, so `True`, not
             // `true`; `None`, not `nil`.
-            #expect(GitHub.ContinuousIntegration.Workflow.YAML.Node.boolean(true).pythonRepr == "True")
+            #expect(
+                GitHub.ContinuousIntegration.Workflow.YAML.Node.boolean(true).pythonRepr == "True"
+            )
             #expect(GitHub.ContinuousIntegration.Workflow.YAML.Node.null.pythonRepr == "None")
             #expect(GitHub.ContinuousIntegration.Workflow.YAML.Node.integer(3).pythonRepr == "3")
         }
@@ -53,22 +55,42 @@ struct CIValidationWorkflowShapeTests {
         }
 
         @Test func `dot build is matched as a whole path component`() {
-            #expect(GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory(".build"))
-            #expect(GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory("./.build/"))
-            #expect(GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory("a/.build"))
-            #expect(!GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory("mybuild"))
-            #expect(!GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory(".build-extra"))
+            #expect(
+                GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory(".build")
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory("./.build/")
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory("a/.build")
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory("mybuild")
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory(
+                    ".build-extra"
+                )
+            )
         }
 
         @Test func `a digest pin is forty lower-case hex digits`() {
             let action = GitHub.ContinuousIntegration.Validation.HardenRunner.action
             #expect(
                 GitHub.ContinuousIntegration.Validation.HardenRunner.isPinnedToDigest(
-                    action + String(repeating: "a", count: 40)))
-            #expect(!GitHub.ContinuousIntegration.Validation.HardenRunner.isPinnedToDigest(action + "v2.19.1"))
+                    action + String(repeating: "a", count: 40)
+                )
+            )
             #expect(
                 !GitHub.ContinuousIntegration.Validation.HardenRunner.isPinnedToDigest(
-                    action + String(repeating: "A", count: 40)))
+                    action + "v2.19.1"
+                )
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.HardenRunner.isPinnedToDigest(
+                    action + String(repeating: "A", count: 40)
+                )
+            )
         }
 
         @Test func `a routing job declares uses and no steps`() throws {
@@ -81,14 +103,21 @@ struct CIValidationWorkflowShapeTests {
                       work:
                         steps:
                           - run: true
-                    """)
-            #expect(GitHub.ContinuousIntegration.Validation.HardenRunner.isRouting(document.jobs[0]))
-            #expect(!GitHub.ContinuousIntegration.Validation.HardenRunner.isRouting(document.jobs[1]))
+                    """
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.HardenRunner.isRouting(document.jobs[0])
+            )
+            #expect(
+                !GitHub.ContinuousIntegration.Validation.HardenRunner.isRouting(document.jobs[1])
+            )
         }
 
         @Test func `every ported rule resolves to the validator that replaces its script`() {
             for (rule, script) in CIValidationWorkflowShapeTests.ported {
-                let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(for: rule)
+                let validator = GitHub.ContinuousIntegration.Validation.Registry.validator(
+                    for: rule
+                )
                 #expect(validator != nil, "no validator registered for \(rule)")
                 #expect(validator?.retiredScript == script)
             }
@@ -101,26 +130,39 @@ struct CIValidationWorkflowShapeTests {
             // Python's own quote rule. Workflow values are quoted YAML, so
             // both shapes reach a finding.
             #expect(GitHub.ContinuousIntegration.Workflow.YAML.Node.repr("it's") == "\"it's\"")
-            #expect(GitHub.ContinuousIntegration.Workflow.YAML.Node.repr("it's \"x\"") == #"'it\'s "x"'"#)
+            #expect(
+                GitHub.ContinuousIntegration.Workflow.YAML.Node.repr("it's \"x\"")
+                    == #"'it\'s "x"'"#
+            )
         }
 
         @Test func `control characters escape rather than travel into the TSV`() {
-            #expect(GitHub.ContinuousIntegration.Workflow.YAML.Node.repr("a\nb\tc") == #"'a\nb\tc'"#)
+            #expect(
+                GitHub.ContinuousIntegration.Workflow.YAML.Node.repr("a\nb\tc") == #"'a\nb\tc'"#
+            )
             #expect(GitHub.ContinuousIntegration.Workflow.YAML.Node.repr("\u{01}") == #"'\x01'"#)
         }
 
         @Test func `the restore-keys preview truncates by code point`() {
             // Python slices by code point, not by grapheme cluster, and
             // the two differ on a composed character at the boundary.
-            #expect(GitHub.ContinuousIntegration.Validation.CachePolicy.preview(of: "  swift-\n  ") == "swift-")
+            #expect(
+                GitHub.ContinuousIntegration.Validation.CachePolicy.preview(of: "  swift-\n  ")
+                    == "swift-"
+            )
             let composed = GitHub.ContinuousIntegration.Validation.CachePolicy.preview(
-                of: "e\u{0301}" + String(repeating: "x", count: 100))
+                of: "e\u{0301}" + String(repeating: "x", count: 100)
+            )
             #expect(composed.unicodeScalars.count == 80)
             #expect(composed.count == 79, "a grapheme-counting slice would keep 80 characters")
         }
 
         @Test func `a multi-line cache path is read line by line`() {
-            #expect(GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory("~/.swiftpm\n.build\n"))
+            #expect(
+                GitHub.ContinuousIntegration.Validation.CachePolicy.namesBuildDirectory(
+                    "~/.swiftpm\n.build\n"
+                )
+            )
         }
 
         @Test func `both cache rules can fire on one step`() throws {
@@ -135,11 +177,16 @@ struct CIValidationWorkflowShapeTests {
                               path: .build
                               restore-keys: |
                                 swift-
-                    """)
+                    """
+            )
             let job = try #require(document.jobs.first)
             let with = try #require(job.steps.first?["with"]?.mapping)
             let findings = GitHub.ContinuousIntegration.Validation.CachePolicy.findings(
-                in: with, repository: "r", document: "ci.yml", job: "build")
+                in: with,
+                repository: "r",
+                document: "ci.yml",
+                job: "build"
+            )
             #expect(findings.map(\.rule) == ["CI-040", "CI-042"])
             #expect(findings[0].message.hasSuffix("path='.build'"))
             #expect(findings[1].message.hasSuffix("restore-keys preview: 'swift-'"))
@@ -157,17 +204,27 @@ struct CIValidationWorkflowShapeTests {
                         steps:
                           - just-a-string
                           - uses: actions/checkout@v4
-                    """)
-            #expect(GitHub.ContinuousIntegration.Validation.HardenRunner.firstStep(document.jobs[0]) == nil)
+                    """
+            )
+            #expect(
+                GitHub.ContinuousIntegration.Validation.HardenRunner.firstStep(document.jobs[0])
+                    == nil
+            )
         }
 
         @Test func `absent, empty, and null permissions are three distinct states`() throws {
             let empty = try GitHub.ContinuousIntegration.Workflow.Document(
-                name: "ci.yml", text: "on:\n  workflow_call:\npermissions: {}\n")
+                name: "ci.yml",
+                text: "on:\n  workflow_call:\npermissions: {}\n"
+            )
             let null = try GitHub.ContinuousIntegration.Workflow.Document(
-                name: "ci.yml", text: "on:\n  workflow_call:\npermissions:\n")
+                name: "ci.yml",
+                text: "on:\n  workflow_call:\npermissions:\n"
+            )
             let absent = try GitHub.ContinuousIntegration.Workflow.Document(
-                name: "ci.yml", text: "on:\n  workflow_call:\n")
+                name: "ci.yml",
+                text: "on:\n  workflow_call:\n"
+            )
             #expect(empty.body?["permissions"] == .mapping(.init([])))
             #expect(null.body?["permissions"] == .null)
             #expect(absent.body?["permissions"] == nil)
@@ -178,9 +235,12 @@ struct CIValidationWorkflowShapeTests {
             // singleton, so the quoted string was already a violation.
             let base =
                 "on:\n  workflow_call:\n    inputs:\n      enable-private-repos:\n        default:"
-            func declared(_ text: String) throws -> GitHub.ContinuousIntegration.Workflow.YAML.Node? {
+            func declared(_ text: String) throws -> GitHub.ContinuousIntegration.Workflow.YAML.Node?
+            {
                 try GitHub.ContinuousIntegration.Workflow.Document(name: "ci.yml", text: text)
-                    .triggers?["workflow_call"]?["inputs"]?[GitHub.ContinuousIntegration.Validation.InputDefaults.input]?
+                    .triggers?["workflow_call"]?["inputs"]?[
+                        GitHub.ContinuousIntegration.Validation.InputDefaults.input
+                    ]?
                     .mapping?["default"]
             }
             #expect(try declared("\(base) true\n") == .boolean(true))
@@ -194,14 +254,17 @@ struct CIValidationWorkflowShapeTests {
         @Test func `every ported rule has a fixture corpus that fires`() throws {
             // A validator registered against an empty corpus is a gate
             // that proves nothing; four in this repository sat inert.
-            let harness = GitHub.ContinuousIntegration.Validation.Harness(corpus: CIValidationWorkflowShapeTests.corpus)
+            let harness = GitHub.ContinuousIntegration.Validation.Harness(
+                corpus: CIValidationWorkflowShapeTests.corpus
+            )
             let report = try harness.run()
             for rule in CIValidationWorkflowShapeTests.ported.keys.sorted() {
                 let outcomes = report.outcomes.filter { $0.rule == rule }
                 #expect(!outcomes.isEmpty, "\(rule) has no fixture scenarios")
                 #expect(
                     outcomes.contains { $0.scenario.expectation == .violating },
-                    "\(rule) has no fail/ scenario")
+                    "\(rule) has no fail/ scenario"
+                )
                 for outcome in outcomes where !outcome.isSatisfied {
                     Issue.record("\(outcome.summary)")
                 }
@@ -209,7 +272,9 @@ struct CIValidationWorkflowShapeTests {
         }
 
         @Test func `no ported rule directory remains unowned`() throws {
-            let harness = GitHub.ContinuousIntegration.Validation.Harness(corpus: CIValidationWorkflowShapeTests.corpus)
+            let harness = GitHub.ContinuousIntegration.Validation.Harness(
+                corpus: CIValidationWorkflowShapeTests.corpus
+            )
             let report = try harness.run()
             let unowned = Set(report.unownedRuleDirectories)
             for rule in CIValidationWorkflowShapeTests.ported.keys {

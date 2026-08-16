@@ -1,13 +1,14 @@
-import GitHub_Continuous_Integration
-import GitHub_Standard
-import GitHub_Continuous_Integration_Validation
 import Foundation
+import GitHub_Continuous_Integration
+import GitHub_Continuous_Integration_Validation
+import GitHub_Standard
 import Testing
 
 @Suite
 struct CIValidationSubOrgWrappersTests {
     static func findings(
-        _ repository: String, files: [String: String]
+        _ repository: String,
+        files: [String: String]
     ) throws -> [GitHub.ContinuousIntegration.Validation.Finding] {
         let root = URL(filePath: NSTemporaryDirectory())
             .appending(path: "c3-suborg-\(UUID().uuidString)")
@@ -15,15 +16,23 @@ struct CIValidationSubOrgWrappersTests {
         for (path, text) in files {
             let file = root.appending(path: path)
             try FileManager.default.createDirectory(
-                at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+                at: file.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
             try text.write(to: file, atomically: true, encoding: .utf8)
         }
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         return try GitHub.ContinuousIntegration.Validation.SubOrgWrappers().findings(
-            in: GitHub.ContinuousIntegration.Validation.Subject(repository: repository, root: root.path))
+            in: GitHub.ContinuousIntegration.Validation.Subject(
+                repository: repository,
+                root: root.path
+            )
+        )
     }
 
-    static let wrapper = [".github/workflows/swift-ci.yml": "name: swift-ci\non:\n  workflow_call:\n"]
+    static let wrapper = [
+        ".github/workflows/swift-ci.yml": "name: swift-ci\non:\n  workflow_call:\n"
+    ]
 
     /// The rule is a negative existence check on exactly one coordinate:
     /// a wrapper, in a sub-org's `.github` repository. Each of the three
@@ -32,9 +41,12 @@ struct CIValidationSubOrgWrappersTests {
     func firesOnlyOnAWrapperInASubOrganizationDotGithubRepository() throws {
         #expect(try Self.findings("swift-ietf/.github", files: Self.wrapper).count == 1)
         // A sub-org `.github` without the wrapper — the canonical state.
-        #expect(try Self.findings(
-            "swift-ietf/.github",
-            files: [".github/workflows/other.yml": "name: other\n"]).isEmpty)
+        #expect(
+            try Self.findings(
+                "swift-ietf/.github",
+                files: [".github/workflows/other.yml": "name: other\n"]
+            ).isEmpty
+        )
         // The wrapper, but not in a `.github` repository.
         #expect(try Self.findings("swift-ietf/swift-rfc-3986", files: Self.wrapper).isEmpty)
         // The wrapper in a `.github` repository, but not a sub-org's —
@@ -49,12 +61,18 @@ struct CIValidationSubOrgWrappersTests {
     @Test
     func theRepairNamesTheAuthoritysOwnParentLayerWrapper() throws {
         let standards = try Self.findings("swift-iso/.github", files: Self.wrapper)
-        #expect(standards[0].message.contains(
-            "swift-standards/.github/.github/workflows/swift-ci.yml@main"))
+        #expect(
+            standards[0].message.contains(
+                "swift-standards/.github/.github/workflows/swift-ci.yml@main"
+            )
+        )
 
         let foundations = try Self.findings("swift-microsoft/.github", files: Self.wrapper)
-        #expect(foundations[0].message.contains(
-            "swift-foundations/.github/.github/workflows/swift-ci.yml@main"))
+        #expect(
+            foundations[0].message.contains(
+                "swift-foundations/.github/.github/workflows/swift-ci.yml@main"
+            )
+        )
     }
 
     /// The corpus reports every scenario as `swift-institute-test/<name>`,
@@ -72,21 +90,32 @@ struct CIValidationSubOrgWrappersTests {
     }
 
     /// The thirteen authorities, partitioned by the layer wrapper they
-    /// route through. `ThinCallers` reads this same set for `[CI-059]`'s
-    /// inversion rather than restating it — two spellings of thirteen
-    /// organizations is the drift the validators manifest exists because
-    /// of.
+    /// route through.
     @Test
     func theSubOrganizationSetIsThirteenAndPartitioned() {
-        #expect(GitHub.ContinuousIntegration.Validation.SubOrgWrappers.standardsSubOrganizations.count == 11)
-        #expect(GitHub.ContinuousIntegration.Validation.SubOrgWrappers.foundationsSubOrganizations.count == 2)
+        #expect(
+            GitHub.ContinuousIntegration.Validation.SubOrgWrappers.standardsSubOrganizations.count
+                == 11
+        )
+        #expect(
+            GitHub.ContinuousIntegration.Validation.SubOrgWrappers.foundationsSubOrganizations.count
+                == 2
+        )
         #expect(GitHub.ContinuousIntegration.Validation.SubOrgWrappers.subOrganizations.count == 13)
-        #expect(GitHub.ContinuousIntegration.Validation.SubOrgWrappers.standardsSubOrganizations
-            .isDisjoint(with: GitHub.ContinuousIntegration.Validation.SubOrgWrappers.foundationsSubOrganizations))
+        #expect(
+            GitHub.ContinuousIntegration.Validation.SubOrgWrappers.standardsSubOrganizations
+                .isDisjoint(
+                    with: GitHub.ContinuousIntegration.Validation.SubOrgWrappers
+                        .foundationsSubOrganizations
+                )
+        )
     }
 
     @Test
     func theRuleResolvesToThisValidator() {
-        #expect(GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-004b") is GitHub.ContinuousIntegration.Validation.SubOrgWrappers)
+        #expect(
+            GitHub.ContinuousIntegration.Validation.Registry.validator(for: "CI-004b")
+                is GitHub.ContinuousIntegration.Validation.SubOrgWrappers
+        )
     }
 }
