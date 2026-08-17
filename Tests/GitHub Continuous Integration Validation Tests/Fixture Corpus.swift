@@ -1,4 +1,5 @@
 import Foundation
+import GitHub_Standard
 
 @testable import GitHub_Continuous_Integration_Validation
 
