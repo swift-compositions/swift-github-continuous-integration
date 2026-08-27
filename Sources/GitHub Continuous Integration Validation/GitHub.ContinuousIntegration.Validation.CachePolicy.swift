@@ -9,9 +9,9 @@ extension GitHub.ContinuousIntegration.Validation {
     /// point in the document — an `actions/cache` step's `with:` block —
     /// and a single step can violate both.
     ///
-    /// `[CI-040]` is carve-out free. The L1-embedded-job exemption that
+    /// `[CI-040]` is carve-out free. The L2-embedded-job exemption that
     /// stood until 2026-07-31 is retired (swift-institute/.github#161):
-    /// the `embedded` job in swift-primitives/.github was restoring ~84MB
+    /// the `embedded` job in swift-molecules/.github was restoring ~84MB
     /// of `.build` and reporting "Build complete!" with zero `Compiling`
     /// lines, so the leg's green attested a cache restore rather than a
     /// compile. An exact key does not save it — the key hashed only the

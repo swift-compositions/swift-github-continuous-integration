@@ -20,7 +20,7 @@ extension GitHub.ContinuousIntegration.Validation {
 
         public init() {}
 
-        /// The eleven L2 authority sub-orgs, which route through the
+        /// The eleven L3 authority sub-orgs, which route through the
         /// `swift-standards` layer wrapper.
         public static let standardsSubOrganizations: Set<String> = [
             "swift-ietf", "swift-iso", "swift-w3c", "swift-whatwg", "swift-ecma",
@@ -28,13 +28,13 @@ extension GitHub.ContinuousIntegration.Validation {
             "swift-intel", "swift-riscv",
         ]
 
-        /// The two L3 sub-orgs, which route through `swift-foundations`.
-        public static let foundationsSubOrganizations: Set<String> = [
+        /// The two L4 sub-orgs, which route through `swift-compositions`.
+        public static let compositionsSubOrganizations: Set<String> = [
             "swift-linux-foundation", "swift-microsoft",
         ]
 
         public static var subOrganizations: Set<String> {
-            standardsSubOrganizations.union(foundationsSubOrganizations)
+            standardsSubOrganizations.union(compositionsSubOrganizations)
         }
 
         public func findings(in subject: Subject) throws(EnvironmentDefect) -> [Finding] {
@@ -75,8 +75,8 @@ extension GitHub.ContinuousIntegration.Validation {
 
         static func message(organization: String) -> String {
             let parent =
-                foundationsSubOrganizations.contains(organization)
-                ? "swift-foundations" : "swift-standards"
+                compositionsSubOrganizations.contains(organization)
+                ? "swift-compositions" : "swift-standards"
             return """
                 .github/workflows/swift-ci.yml EXISTS at sub-org \
                 `\(organization)/.github` — per [CI-004b] sub-org wrappers MUST NOT \

@@ -18,7 +18,7 @@ extension GitHub.ContinuousIntegration.Validation.ThinCallers {
             .github/workflows/ci.yml contains inline `runs-on:` — per \
             [GH-REPO-074] this MUST be a thin caller delegating to a centralized \
             reusable workflow via `uses:`. Reference shape: \
-            swift-carrier-primitives/.github/workflows/ci.yml.
+            swift-carrier/.github/workflows/ci.yml.
             """
 
         public static let inlineSteps = """

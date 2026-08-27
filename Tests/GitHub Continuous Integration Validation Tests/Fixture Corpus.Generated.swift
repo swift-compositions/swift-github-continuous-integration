@@ -18,14 +18,14 @@ extension FixtureCorpus {
             ZC1zdGF0dXMgZXhjbHVzaW9uIHBhdGguIFRoZSBuYW1lcyBiZWxvdwojIGFyZSBpbnZlbnRlZC4K
             IwojIFNjaGVtYSAobWF0Y2hlcyB0aGUgY2Fub25pY2FsIG1hbmlmZXN0KToKIyAgIC0gbmFtZTog
             ICBHaXRIdWIgb3JnIHNsdWcgKGtlYmFiLWNhc2UpCiMgICAgIGxheWVyOiAgQXJjaGl0ZWN0dXJh
-            bCBsYXllciBhc3NpZ25tZW50IChMMSB8IEwyIHwgTDMgfCBtZXRhKQojICAgICBzdGF0dXM6IGFj
-            dGl2ZSB8IGFyY2hpdmVkICAoZGVmYXVsdCBhY3RpdmU7IGFyY2hpdmVkIG9yZ3MgYXJlCiMgICAg
-            ICAgICAgICAgZmlsdGVyZWQgb3V0IGJ5IGRlZmF1bHQpCgotIG5hbWU6IGV4YW1wbGUtb3JnYW5p
-            emF0aW9uLW9uZQogIGxheWVyOiBMMQogIHN0YXR1czogYWN0aXZlCgotIG5hbWU6IGV4YW1wbGUt
-            b3JnYW5pemF0aW9uLXR3bwogIGxheWVyOiBMMgogIHN0YXR1czogYWN0aXZlCgotIG5hbWU6IGV4
-            YW1wbGUtb3JnYW5pemF0aW9uLW1ldGEKICBsYXllcjogbWV0YQogIHN0YXR1czogYWN0aXZlCgot
-            IG5hbWU6IGV4YW1wbGUtb3JnYW5pemF0aW9uLWFyY2hpdmVkCiAgbGF5ZXI6IEwzCiAgc3RhdHVz
-            OiBhcmNoaXZlZAo=
+            bCBsYXllciBhc3NpZ25tZW50IChMMSB8IEwyIHwgTDMgfCBMNCB8IG1ldGEpCiMgICAgIHN0YXR1
+            czogYWN0aXZlIHwgYXJjaGl2ZWQgIChkZWZhdWx0IGFjdGl2ZTsgYXJjaGl2ZWQgb3JncyBhcmUK
+            IyAgICAgICAgICAgICBmaWx0ZXJlZCBvdXQgYnkgZGVmYXVsdCkKCi0gbmFtZTogZXhhbXBsZS1v
+            cmdhbml6YXRpb24tb25lCiAgbGF5ZXI6IEwxCiAgc3RhdHVzOiBhY3RpdmUKCi0gbmFtZTogZXhh
+            bXBsZS1vcmdhbml6YXRpb24tdHdvCiAgbGF5ZXI6IEwyCiAgc3RhdHVzOiBhY3RpdmUKCi0gbmFt
+            ZTogZXhhbXBsZS1vcmdhbml6YXRpb24tbWV0YQogIGxheWVyOiBtZXRhCiAgc3RhdHVzOiBhY3Rp
+            dmUKCi0gbmFtZTogZXhhbXBsZS1vcmdhbml6YXRpb24tYXJjaGl2ZWQKICBsYXllcjogTDMKICBz
+            dGF0dXM6IGFyY2hpdmVkCg==
         """
 
     static let generatedFiles: [File] = [
@@ -195,13 +195,13 @@ extension FixtureCorpus {
         .init(
             path: "ci-004b/fail/swift-microsoft-with-wrapper/.github/workflows/swift-ci.yml",
             base64: """
-                    bmFtZTogRm9yYmlkZGVuIEwzIHN1Yi1vcmcgd3JhcHBlcgoKIyBEZWZlY3Q6IHNpbXVsYXRlcyBg
-                    c3dpZnQtbWljcm9zb2Z0Ly5naXRodWJgIChMMyBzdWItb3JnKSBXSVRICiMgYHN3aWZ0LWNpLnlt
+                    bmFtZTogRm9yYmlkZGVuIEw0IHN1Yi1vcmcgd3JhcHBlcgoKIyBEZWZlY3Q6IHNpbXVsYXRlcyBg
+                    c3dpZnQtbWljcm9zb2Z0Ly5naXRodWJgIChMNCBzdWItb3JnKSBXSVRICiMgYHN3aWZ0LWNpLnlt
                     bGAuIFZhbGlkYXRvcidzIGVycm9yIG1lc3NhZ2Ugc2hvdWxkIGNpdGUgdGhlIHBhcmVudCBsYXll
-                    cgojIGFzIGBzd2lmdC1mb3VuZGF0aW9uc2AgKEwzLXJvdXRlZCkgcmF0aGVyIHRoYW4gYHN3aWZ0
-                    LXN0YW5kYXJkc2AgKEwyKS4KCm9uOgogIHdvcmtmbG93X2NhbGw6IHt9Cgpqb2JzOgogIGNpOgog
-                    ICAgcnVucy1vbjogdWJ1bnR1LWxhdGVzdAogICAgc3RlcHM6CiAgICAgIC0gcnVuOiBlY2hvICJj
-                    aSIK
+                    cgojIGFzIGBzd2lmdC1jb21wb3NpdGlvbnNgIChMNC1yb3V0ZWQpIHJhdGhlciB0aGFuIGBzd2lm
+                    dC1zdGFuZGFyZHNgIChMMykuCgpvbjoKICB3b3JrZmxvd19jYWxsOiB7fQoKam9iczoKICBjaToK
+                    ICAgIHJ1bnMtb246IHVidW50dS1sYXRlc3QKICAgIHN0ZXBzOgogICAgICAtIHJ1bjogZWNobyAi
+                    Y2kiCg==
                 """
         ),
         .init(
@@ -402,7 +402,7 @@ extension FixtureCorpus {
         .init(
             path: "ci-021/fail/embedded-coe-false/.github/workflows/swift-ci.yml",
             base64: """
-                    bmFtZTogU3dpZnQgQ0kgKEwxIHdyYXBwZXIpCgojIERlZmVjdDogZW1iZWRkZWQgam9iIGhhcyBj
+                    bmFtZTogU3dpZnQgQ0kgKEwyIHdyYXBwZXIpCgojIERlZmVjdDogZW1iZWRkZWQgam9iIGhhcyBj
                     b250aW51ZS1vbi1lcnJvcjogZmFsc2UgKGV4cGxpY2l0KS4gVGhlIHJ1bGUKIyByZXF1aXJlcyBg
                     OiB0cnVlYDsgZXhwbGljaXQgYDogZmFsc2VgIGlzIHRoZSBsaXRlcmFsIHZpb2xhdGlvbi4KCm9u
                     OgogIHdvcmtmbG93X2NhbGw6IHt9Cgpqb2JzOgogIGVtYmVkZGVkOgogICAgcnVucy1vbjogdWJ1
@@ -415,7 +415,7 @@ extension FixtureCorpus {
         .init(
             path: "ci-021/fail/embedded-without-coe/.github/workflows/swift-ci.yml",
             base64: """
-                    bmFtZTogU3dpZnQgQ0kgKEwxIHdyYXBwZXIpCgojIERlZmVjdDogZW1iZWRkZWQgam9iIGRlY2xh
+                    bmFtZTogU3dpZnQgQ0kgKEwyIHdyYXBwZXIpCgojIERlZmVjdDogZW1iZWRkZWQgam9iIGRlY2xh
                     cmVkIHdpdGhvdXQgY29udGludWUtb24tZXJyb3IuIFBlciBbQ0ktMDIxXSB0aGUKIyBqb2IgTVVT
                     VCBjYXJyeSBjb250aW51ZS1vbi1lcnJvcjogdHJ1ZSB3aGlsZSA2LjQtZGV2IG5pZ2h0bHkgaXMg
                     dGhlCiMgZGV2ZWxvcG1lbnQgYnJhbmNoIOKAlCB0b29sY2hhaW4taW5zdGFiaWxpdHkgbm9pc2Ug
@@ -429,15 +429,15 @@ extension FixtureCorpus {
         .init(
             path: "ci-021/pass/embedded-with-coe/.github/workflows/swift-ci.yml",
             base64: """
-                    bmFtZTogU3dpZnQgQ0kgKEwxIHdyYXBwZXIpCgojIFBBU1M6IGVtYmVkZGVkIGpvYiBjYXJyaWVz
+                    bmFtZTogU3dpZnQgQ0kgKEwyIHdyYXBwZXIpCgojIFBBU1M6IGVtYmVkZGVkIGpvYiBjYXJyaWVz
                     IGNvbnRpbnVlLW9uLWVycm9yOiB0cnVlIHBlciBbQ0ktMDIxXS4KIyBNaXJyb3JzIGxpdmUgc3dp
-                    ZnQtcHJpbWl0aXZlcy8uZ2l0aHViLy5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWNpLnltbC4KCm9u
-                    OgogIHdvcmtmbG93X2NhbGw6IHt9Cgpqb2JzOgogIGVtYmVkZGVkOgogICAgbmFtZTogVWJ1bnR1
-                    IChTd2lmdCA2LjQtZGV2IG5pZ2h0bHksIEVtYmVkZGVkIGJ1aWxkKQogICAgcnVucy1vbjogdWJ1
-                    bnR1LWxhdGVzdAogICAgY29udGludWUtb24tZXJyb3I6IHRydWUKICAgIGNvbnRhaW5lcjogc3dp
-                    ZnRsYW5nL3N3aWZ0Om5pZ2h0bHktbWFpbi1qYW1teQogICAgc3RlcHM6CiAgICAgIC0gcnVuOiBz
-                    d2lmdCBidWlsZCAtWHN3aWZ0YyAtZW5hYmxlLWV4cGVyaW1lbnRhbC1mZWF0dXJlIC1Yc3dpZnRj
-                    IEVtYmVkZGVkCg==
+                    ZnQtbW9sZWN1bGVzLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtY2kueW1sLgoKb246
+                    CiAgd29ya2Zsb3dfY2FsbDoge30KCmpvYnM6CiAgZW1iZWRkZWQ6CiAgICBuYW1lOiBVYnVudHUg
+                    KFN3aWZ0IDYuNC1kZXYgbmlnaHRseSwgRW1iZWRkZWQgYnVpbGQpCiAgICBydW5zLW9uOiB1YnVu
+                    dHUtbGF0ZXN0CiAgICBjb250aW51ZS1vbi1lcnJvcjogdHJ1ZQogICAgY29udGFpbmVyOiBzd2lm
+                    dGxhbmcvc3dpZnQ6bmlnaHRseS1tYWluLWphbW15CiAgICBzdGVwczoKICAgICAgLSBydW46IHN3
+                    aWZ0IGJ1aWxkIC1Yc3dpZnRjIC1lbmFibGUtZXhwZXJpbWVudGFsLWZlYXR1cmUgLVhzd2lmdGMg
+                    RW1iZWRkZWQK
                 """
         ),
         .init(
@@ -507,9 +507,9 @@ extension FixtureCorpus {
                     cHJvbGlmZXJhdGVzIHBpbiBtYWludGVuYW5jZSBwZXIgY29uc3VtZXI7IHRoZQojIGFjdGl2ZS1k
                     ZXYgcm9sbGluZyBgQG1haW5gIGlzIHRoZSBjYW5vbmljYWwgcGluLgoKb246CiAgcHVzaDoKICAg
                     IGJyYW5jaGVzOiBbbWFpbl0KICBwdWxsX3JlcXVlc3Q6Cgpqb2JzOgogIGNpOgogICAgdXNlczog
-                    c3dpZnQtZm91bmRhdGlvbnMvLmdpdGh1Yi8uZ2l0aHViL3dvcmtmbG93cy9zd2lmdC1jaS55bWxA
-                    YWJjMTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0CiAgICBzZWNyZXRzOiBpbmhl
-                    cml0Cg==
+                    c3dpZnQtY29tcG9zaXRpb25zLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtY2kueW1s
+                    QGFiYzEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVmMTIzNAogICAgc2VjcmV0czogaW5o
+                    ZXJpdAo=
                 """
         ),
         .init(
@@ -527,8 +527,8 @@ extension FixtureCorpus {
                     YWcgcGlubmluZyBpcyBhIHN0YWJpbGl6YXRpb24gc2lnbmFsIHRoYXQgZG9lcwojIG5vdCB5ZXQg
                     YXBwbHk7IHRoZSBzdXJmYWNlIHN0aWxsIGl0ZXJhdGVzLgoKb246CiAgcHVzaDoKICAgIGJyYW5j
                     aGVzOiBbbWFpbl0KICBwdWxsX3JlcXVlc3Q6Cgpqb2JzOgogIGNpOgogICAgdXNlczogc3dpZnQt
-                    cHJpbWl0aXZlcy8uZ2l0aHViLy5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWNpLnltbEB2MQogICAg
-                    c2VjcmV0czogaW5oZXJpdAo=
+                    bW9sZWN1bGVzLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtY2kueW1sQHYxCiAgICBz
+                    ZWNyZXRzOiBpbmhlcml0Cg==
                 """
         ),
         .init(
@@ -539,21 +539,21 @@ extension FixtureCorpus {
                 """
         ),
         .init(
-            path: "ci-030/pass/swift-foo-primitives/.github/workflows/ci.yml",
+            path: "ci-030/pass/swift-foo/.github/workflows/ci.yml",
             base64: """
                     bmFtZTogQ0kKCm9uOgogIHB1c2g6CiAgICBicmFuY2hlczoKICAgICAgLSBtYWluCiAgcHVsbF9y
                     ZXF1ZXN0OgogICAgYnJhbmNoZXM6CiAgICAgIC0gbWFpbgoKam9iczoKICBjaToKICAgIHVzZXM6
-                    IHN3aWZ0LXByaW1pdGl2ZXMvLmdpdGh1Yi8uZ2l0aHViL3dvcmtmbG93cy9zd2lmdC1jaS55bWxA
-                    bWFpbgogICAgc2VjcmV0czogaW5oZXJpdAoKICBkb2NzOgogICAgdXNlczogc3dpZnQtaW5zdGl0
-                    dXRlLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtZG9jcy55bWxAbWFpbgogICAgc2Vj
-                    cmV0czogaW5oZXJpdAo=
+                    IHN3aWZ0LW1vbGVjdWxlcy8uZ2l0aHViLy5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWNpLnltbEBt
+                    YWluCiAgICBzZWNyZXRzOiBpbmhlcml0CgogIGRvY3M6CiAgICB1c2VzOiBzd2lmdC1pbnN0aXR1
+                    dGUvLmdpdGh1Yi8uZ2l0aHViL3dvcmtmbG93cy9zd2lmdC1kb2NzLnltbEBtYWluCiAgICBzZWNy
+                    ZXRzOiBpbmhlcml0Cg==
                 """
         ),
         .init(
-            path: "ci-030/pass/swift-foo-primitives/Package.swift",
+            path: "ci-030/pass/swift-foo/Package.swift",
             base64: """
                     Ly8gc3dpZnQtdG9vbHMtdmVyc2lvbjogNi4zCmltcG9ydCBQYWNrYWdlRGVzY3JpcHRpb24KbGV0
-                    IHBhY2thZ2UgPSBQYWNrYWdlKG5hbWU6ICJzd2lmdC1mb28tcHJpbWl0aXZlcyIpCg==
+                    IHBhY2thZ2UgPSBQYWNrYWdlKG5hbWU6ICJzd2lmdC1mb28iKQo=
                 """
         ),
         .init(
@@ -564,11 +564,11 @@ extension FixtureCorpus {
                     aGlyZC1wYXJ0eSBhY3Rpb24gcGluIChDSS0xMDcgbGF0ZXN0LW1ham9yCiMgZGlzY2lwbGluZSwg
                     Tk9UIENJLTAzMCBzY29wZSkuIFRoZSB0aGlyZC1wYXJ0eSBgQHY2YCBNVVNUIE5PVCBmaXJlIENJ
                     LTAzMC4KCm9uOgogIHB1c2g6CiAgICBicmFuY2hlczogW21haW5dCiAgcHVsbF9yZXF1ZXN0OgoK
-                    am9iczoKICBjaToKICAgIHVzZXM6IHN3aWZ0LWZvdW5kYXRpb25zLy5naXRodWIvLmdpdGh1Yi93
-                    b3JrZmxvd3Mvc3dpZnQtY2kueW1sQG1haW4KICAgIHNlY3JldHM6IGluaGVyaXQKCiAgIyBDcm9z
-                    cy1vcmcgcmV1c2FibGUgZnJvbSBhIGRpZmZlcmVudCBpbnRyYS1JbnN0aXR1dGUgb3JnIOKAlCBh
-                    bHNvIEBtYWluLgogIGRvY3M6CiAgICB1c2VzOiBzd2lmdC1pbnN0aXR1dGUvLmdpdGh1Yi8uZ2l0
-                    aHViL3dvcmtmbG93cy9zd2lmdC1kb2NzLnltbEBtYWluCiAgICBzZWNyZXRzOiBpbmhlcml0Cg==
+                    am9iczoKICBjaToKICAgIHVzZXM6IHN3aWZ0LWNvbXBvc2l0aW9ucy8uZ2l0aHViLy5naXRodWIv
+                    d29ya2Zsb3dzL3N3aWZ0LWNpLnltbEBtYWluCiAgICBzZWNyZXRzOiBpbmhlcml0CgogICMgQ3Jv
+                    c3Mtb3JnIHJldXNhYmxlIGZyb20gYSBkaWZmZXJlbnQgaW50cmEtSW5zdGl0dXRlIG9yZyDigJQg
+                    YWxzbyBAbWFpbi4KICBkb2NzOgogICAgdXNlczogc3dpZnQtaW5zdGl0dXRlLy5naXRodWIvLmdp
+                    dGh1Yi93b3JrZmxvd3Mvc3dpZnQtZG9jcy55bWxAbWFpbgogICAgc2VjcmV0czogaW5oZXJpdAo=
                 """
         ),
         .init(
@@ -740,8 +740,8 @@ extension FixtureCorpus {
         .init(
             path: "ci-040/fail/l1-embedded-job/.github/workflows/swift-ci.yml",
             base64: """
-                    bmFtZTogRmFpbCDigJQgTDEgZW1iZWRkZWQgam9iJ3MgLmJ1aWxkIGNhY2hlIChjYXJ2ZS1vdXQg
-                    cmV0aXJlZCkKCiMgVGhpcyBmaXh0dXJlIG1pcnJvcnMgdGhlIEwxIGxheWVyIHdyYXBwZXIncyBl
+                    bmFtZTogRmFpbCDigJQgTDIgZW1iZWRkZWQgam9iJ3MgLmJ1aWxkIGNhY2hlIChjYXJ2ZS1vdXQg
+                    cmV0aXJlZCkKCiMgVGhpcyBmaXh0dXJlIG1pcnJvcnMgdGhlIEwyIGxheWVyIHdyYXBwZXIncyBl
                     bWJlZGRlZCBqb2IgYXMgaXQgc3Rvb2QKIyB1bnRpbCAyMDI2LTA3LTMxOiBiYXNlbmFtZSBzd2lm
                     dC1jaS55bWwsIGpvYiBuYW1lIGBlbWJlZGRlZGAsIGNhY2hlIHN0ZXAKIyB3aXRoIGFuIGV4YWN0
                     LW1hdGNoIGtleSBhbmQgTk8gcmVzdG9yZS1rZXlzLiBJdCB1c2VkIHRvIGJlIGFuIGBlZGdlL2AK
@@ -1685,10 +1685,10 @@ extension FixtureCorpus {
                     b24tZXJyb3IgYW55d2hlcmUuIFRyaXZpYWxseQojIHBlcm1pdHRlZCB1bmRlciBbQ0ktMTA1XS4g
                     Q29uZmlybXMgdGhlIHZhbGlkYXRvciBzaWxlbmNlcyBvbiB0aGUgbW9zdAojIGNvbW1vbiBlY29z
                     eXN0ZW0gc2hhcGUuCgpvbjoKICBwdXNoOgogICAgYnJhbmNoZXM6IFttYWluXQogIHB1bGxfcmVx
-                    dWVzdDoKCmpvYnM6CiAgY2k6CiAgICB1c2VzOiBzd2lmdC1wcmltaXRpdmVzLy5naXRodWIvLmdp
-                    dGh1Yi93b3JrZmxvd3Mvc3dpZnQtY2kueW1sQG1haW4KICAgIHNlY3JldHM6IGluaGVyaXQKICBk
-                    b2NzOgogICAgdXNlczogc3dpZnQtaW5zdGl0dXRlLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mv
-                    c3dpZnQtZG9jcy55bWxAbWFpbgogICAgc2VjcmV0czogaW5oZXJpdAo=
+                    dWVzdDoKCmpvYnM6CiAgY2k6CiAgICB1c2VzOiBzd2lmdC1tb2xlY3VsZXMvLmdpdGh1Yi8uZ2l0
+                    aHViL3dvcmtmbG93cy9zd2lmdC1jaS55bWxAbWFpbgogICAgc2VjcmV0czogaW5oZXJpdAogIGRv
+                    Y3M6CiAgICB1c2VzOiBzd2lmdC1pbnN0aXR1dGUvLmdpdGh1Yi8uZ2l0aHViL3dvcmtmbG93cy9z
+                    d2lmdC1kb2NzLnltbEBtYWluCiAgICBzZWNyZXRzOiBpbmhlcml0Cg==
                 """
         ),
         .init(
@@ -1734,8 +1734,8 @@ extension FixtureCorpus {
                     dCBzd2lmdC1pbnN0aXR1dGUvLmdpdGh1YgojIGNvbW1pdCAzM2Y2MzhiIHRoYXQgYnJva2UgZXZl
                     cnkgY29uc3VtZXIgQ0kgYmVmb3JlIHRoZSBmaXggaW4gYjVkODQ0NS4KCm9uOgogIHB1c2g6CiAg
                     ICBicmFuY2hlczogW21haW5dCiAgcHVsbF9yZXF1ZXN0OgoKam9iczoKICBjaToKICAgIHVzZXM6
-                    IHN3aWZ0LXByaW1pdGl2ZXMvLmdpdGh1Yi8uZ2l0aHViL3dvcmtmbG93cy9zd2lmdC1jaS55bWxA
-                    bWFpbgogICAgY29udGludWUtb24tZXJyb3I6IHRydWUKICAgIHNlY3JldHM6IGluaGVyaXQK
+                    IHN3aWZ0LW1vbGVjdWxlcy8uZ2l0aHViLy5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWNpLnltbEBt
+                    YWluCiAgICBjb250aW51ZS1vbi1lcnJvcjogdHJ1ZQogICAgc2VjcmV0czogaW5oZXJpdAo=
                 """
         ),
         .init(
@@ -1754,11 +1754,10 @@ extension FixtureCorpus {
                     YidzIGNvbnRpbnVlLW9uLWVycm9yK3VzZXMgY29tYmluYXRpb24gdHJpZ2dlcnMgc3RhcnR1cF9m
                     YWlsdXJlCiMgZm9yIHRoZSBlbnRpcmUgd29ya2Zsb3cgYXQgcGFyc2UgdGltZSDigJQgYm90aCBq
                     b2JzIGZhaWwgdG8gcnVuLgoKb246CiAgcHVzaDoKICAgIGJyYW5jaGVzOiBbbWFpbl0KCmpvYnM6
-                    CiAgY2k6CiAgICB1c2VzOiBzd2lmdC1wcmltaXRpdmVzLy5naXRodWIvLmdpdGh1Yi93b3JrZmxv
-                    d3Mvc3dpZnQtY2kueW1sQG1haW4KICAgIHNlY3JldHM6IGluaGVyaXQKCiAgZG9jczoKICAgIHVz
-                    ZXM6IHN3aWZ0LWluc3RpdHV0ZS8uZ2l0aHViLy5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWRvY3Mu
-                    eW1sQG1haW4KICAgIGNvbnRpbnVlLW9uLWVycm9yOiB0cnVlCiAgICBzZWNyZXRzOiBpbmhlcml0
-                    Cg==
+                    CiAgY2k6CiAgICB1c2VzOiBzd2lmdC1tb2xlY3VsZXMvLmdpdGh1Yi8uZ2l0aHViL3dvcmtmbG93
+                    cy9zd2lmdC1jaS55bWxAbWFpbgogICAgc2VjcmV0czogaW5oZXJpdAoKICBkb2NzOgogICAgdXNl
+                    czogc3dpZnQtaW5zdGl0dXRlLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtZG9jcy55
+                    bWxAbWFpbgogICAgY29udGludWUtb24tZXJyb3I6IHRydWUKICAgIHNlY3JldHM6IGluaGVyaXQK
                 """
         ),
         .init(
@@ -1872,9 +1871,9 @@ extension FixtureCorpus {
             path: "gh-repo-074/fail/swift-mixed-inline/.github/workflows/ci.yml",
             base64: """
                     bmFtZTogQ0kKCm9uOgogIHB1bGxfcmVxdWVzdDoKCmpvYnM6CiAgY2VudHJhbDoKICAgIHVzZXM6
-                    IHN3aWZ0LWZvdW5kYXRpb25zLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtY2kueW1s
-                    QG1haW4KICAgIHNlY3JldHM6IGluaGVyaXQKICBsb2NhbDoKICAgIHJ1bnMtb246IHVidW50dS1s
-                    YXRlc3QKICAgIHN0ZXBzOgogICAgICAtIHJ1bjogc3dpZnQgdGVzdAo=
+                    IHN3aWZ0LWNvbXBvc2l0aW9ucy8uZ2l0aHViLy5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWNpLnlt
+                    bEBtYWluCiAgICBzZWNyZXRzOiBpbmhlcml0CiAgbG9jYWw6CiAgICBydW5zLW9uOiB1YnVudHUt
+                    bGF0ZXN0CiAgICBzdGVwczoKICAgICAgLSBydW46IHN3aWZ0IHRlc3QK
                 """
         ),
         .init(
@@ -1917,16 +1916,17 @@ extension FixtureCorpus {
             path: "gh-repo-074/fail/swift-standalone-format/.github/workflows/ci.yml",
             base64: """
                     bmFtZTogQ0kKCm9uOgogIHB1c2g6CiAgICBicmFuY2hlczoKICAgICAgLSBtYWluCiAgcHVsbF9y
-                    ZXF1ZXN0OgoKam9iczoKICBjaToKICAgIHVzZXM6IHN3aWZ0LWZvdW5kYXRpb25zLy5naXRodWIv
-                    LmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtY2kueW1sQG1haW4KICAgIHNlY3JldHM6IGluaGVyaXQK
+                    ZXF1ZXN0OgoKam9iczoKICBjaToKICAgIHVzZXM6IHN3aWZ0LWNvbXBvc2l0aW9ucy8uZ2l0aHVi
+                    Ly5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWNpLnltbEBtYWluCiAgICBzZWNyZXRzOiBpbmhlcml0
+                    Cg==
                 """
         ),
         .init(
             path: "gh-repo-074/fail/swift-standalone-format/.github/workflows/swift-format.yml",
             base64: """
                     bmFtZTogc3dpZnQtZm9ybWF0CgpvbjoKICBwdWxsX3JlcXVlc3Q6Cgpqb2JzOgogIGZvcm1hdDoK
-                    ICAgIHVzZXM6IHN3aWZ0LWZvdW5kYXRpb25zLy5naXRodWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dp
-                    ZnQtZm9ybWF0LnltbEBtYWluCiAgICBzZWNyZXRzOiBpbmhlcml0Cg==
+                    ICAgIHVzZXM6IHN3aWZ0LWNvbXBvc2l0aW9ucy8uZ2l0aHViLy5naXRodWIvd29ya2Zsb3dzL3N3
+                    aWZ0LWZvcm1hdC55bWxAbWFpbgogICAgc2VjcmV0czogaW5oZXJpdAo=
                 """
         ),
         .init(
@@ -1965,22 +1965,22 @@ extension FixtureCorpus {
                 """
         ),
         .init(
-            path: "gh-repo-074/pass/swift-foo-primitives/.github/workflows/ci.yml",
+            path: "gh-repo-074/pass/swift-foo/.github/workflows/ci.yml",
             base64: """
                     bmFtZTogQ0kKCm9uOgogIHB1c2g6CiAgICBicmFuY2hlczoKICAgICAgLSBtYWluCiAgcHVsbF9y
                     ZXF1ZXN0OgogICAgYnJhbmNoZXM6CiAgICAgIC0gbWFpbgogIHdvcmtmbG93X2Rpc3BhdGNoOgoK
                     Y29uY3VycmVuY3k6CiAgZ3JvdXA6IGNpLSR7eyBnaXRodWIucmVmIH19CiAgY2FuY2VsLWluLXBy
-                    b2dyZXNzOiB0cnVlCgpqb2JzOgogIGNpOgogICAgdXNlczogc3dpZnQtcHJpbWl0aXZlcy8uZ2l0
-                    aHViLy5naXRodWIvd29ya2Zsb3dzL3N3aWZ0LWNpLnltbEBtYWluCiAgICBzZWNyZXRzOiBpbmhl
-                    cml0CgogIGRvY3M6CiAgICB1c2VzOiBzd2lmdC1pbnN0aXR1dGUvLmdpdGh1Yi8uZ2l0aHViL3dv
-                    cmtmbG93cy9zd2lmdC1kb2NzLnltbEBtYWluCiAgICBzZWNyZXRzOiBpbmhlcml0Cg==
+                    b2dyZXNzOiB0cnVlCgpqb2JzOgogIGNpOgogICAgdXNlczogc3dpZnQtbW9sZWN1bGVzLy5naXRo
+                    dWIvLmdpdGh1Yi93b3JrZmxvd3Mvc3dpZnQtY2kueW1sQG1haW4KICAgIHNlY3JldHM6IGluaGVy
+                    aXQKCiAgZG9jczoKICAgIHVzZXM6IHN3aWZ0LWluc3RpdHV0ZS8uZ2l0aHViLy5naXRodWIvd29y
+                    a2Zsb3dzL3N3aWZ0LWRvY3MueW1sQG1haW4KICAgIHNlY3JldHM6IGluaGVyaXQK
                 """
         ),
         .init(
-            path: "gh-repo-074/pass/swift-foo-primitives/Package.swift",
+            path: "gh-repo-074/pass/swift-foo/Package.swift",
             base64: """
                     Ly8gc3dpZnQtdG9vbHMtdmVyc2lvbjogNi4zCmltcG9ydCBQYWNrYWdlRGVzY3JpcHRpb24KbGV0
-                    IHBhY2thZ2UgPSBQYWNrYWdlKG5hbWU6ICJzd2lmdC1mb28tcHJpbWl0aXZlcyIpCg==
+                    IHBhY2thZ2UgPSBQYWNrYWdlKG5hbWU6ICJzd2lmdC1mb28iKQo=
                 """
         ),
     ]

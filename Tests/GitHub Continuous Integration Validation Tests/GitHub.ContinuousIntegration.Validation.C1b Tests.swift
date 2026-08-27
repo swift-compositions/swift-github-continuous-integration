@@ -206,7 +206,7 @@ struct CIValidationC1bTests {
             let workflow = [".github/workflows/swift-ci.yml": "name: Swift CI\njobs: {}\n"]
             let fixture = CIValidationC1bTests.repository("wrapper", workflow)
             let scoped = GitHub.ContinuousIntegration.Validation.Subject(
-                repository: "swift-primitives/.github",
+                repository: "swift-molecules/.github",
                 root: fixture.root
             )
             #expect(

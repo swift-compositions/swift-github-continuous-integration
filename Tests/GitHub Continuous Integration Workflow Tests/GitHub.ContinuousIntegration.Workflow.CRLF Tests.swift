@@ -30,7 +30,7 @@ struct CIWorkflowCRLFTests {
 
         jobs:
           ci:
-            uses: swift-primitives/.github/.github/workflows/swift-ci.yml@main
+            uses: swift-molecules/.github/.github/workflows/swift-ci.yml@main
             secrets: inherit
           lint:
             runs-on: ubuntu-latest

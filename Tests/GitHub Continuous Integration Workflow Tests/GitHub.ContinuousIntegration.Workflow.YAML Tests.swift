@@ -169,7 +169,7 @@ struct CIWorkflowYAMLTests {
 
                 jobs:
                   ci:
-                    uses: swift-primitives/.github/.github/workflows/swift-ci.yml@main
+                    uses: swift-molecules/.github/.github/workflows/swift-ci.yml@main
                     secrets: inherit
                 """
             )
@@ -177,7 +177,7 @@ struct CIWorkflowYAMLTests {
             #expect(
                 YAML.Canonical.json(node) == """
                     {"jobs":{"ci":{"secrets":"inherit",\
-                    "uses":"swift-primitives/.github/.github/workflows/swift-ci.yml@main"}},\
+                    "uses":"swift-molecules/.github/.github/workflows/swift-ci.yml@main"}},\
                     "name":"CI","true":{"push":{"branches":["main"]}}}
                     """
             )

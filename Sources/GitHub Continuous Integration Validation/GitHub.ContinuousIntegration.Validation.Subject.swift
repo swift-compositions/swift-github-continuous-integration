@@ -9,7 +9,7 @@ extension GitHub.ContinuousIntegration.Validation {
     ///
     /// `repository` is the `owner/name` string findings cite; `root` is
     /// where the bytes are. They are separate because they diverge in
-    /// every real invocation — a sweep checks out `swift-primitives/…`
+    /// every real invocation — a sweep checks out `swift-molecules/…`
     /// into a scratch path, and the fixture corpus reports
     /// `swift-institute-test/<fixture>` for a directory under `tests/`.
     ///

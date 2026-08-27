@@ -55,7 +55,7 @@ struct CIValidationSubOrgWrappersTests {
     }
 
     /// The message routes the reader to the *parent layer* wrapper, and
-    /// which parent depends on whether the authority is an L2 or an L3
+    /// which parent depends on whether the authority is an L3 or an L4
     /// sub-org. Naming the wrong one would send a repair to a workflow
     /// that does not serve it.
     @Test
@@ -67,10 +67,10 @@ struct CIValidationSubOrgWrappersTests {
             )
         )
 
-        let foundations = try Self.findings("swift-microsoft/.github", files: Self.wrapper)
+        let compositions = try Self.findings("swift-microsoft/.github", files: Self.wrapper)
         #expect(
-            foundations[0].message.contains(
-                "swift-foundations/.github/.github/workflows/swift-ci.yml@main"
+            compositions[0].message.contains(
+                "swift-compositions/.github/.github/workflows/swift-ci.yml@main"
             )
         )
     }
@@ -98,7 +98,7 @@ struct CIValidationSubOrgWrappersTests {
                 == 11
         )
         #expect(
-            GitHub.ContinuousIntegration.Validation.SubOrgWrappers.foundationsSubOrganizations.count
+            GitHub.ContinuousIntegration.Validation.SubOrgWrappers.compositionsSubOrganizations.count
                 == 2
         )
         #expect(GitHub.ContinuousIntegration.Validation.SubOrgWrappers.subOrganizations.count == 13)
@@ -106,7 +106,7 @@ struct CIValidationSubOrgWrappersTests {
             GitHub.ContinuousIntegration.Validation.SubOrgWrappers.standardsSubOrganizations
                 .isDisjoint(
                     with: GitHub.ContinuousIntegration.Validation.SubOrgWrappers
-                        .foundationsSubOrganizations
+                        .compositionsSubOrganizations
                 )
         )
     }

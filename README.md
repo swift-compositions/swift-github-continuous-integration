@@ -18,5 +18,5 @@ between continuous-integration semantics and GitHub's CI platform.
 
 The generic continuous-integration contract (plans, requirements, legs,
 tiers, aggregate verdicts) lives in
-[swift-continuous-integration](https://github.com/swift-foundations/swift-continuous-integration);
+[swift-continuous-integration](https://github.com/swift-compositions/swift-continuous-integration);
 this package owns only what is specific to GitHub's platform.

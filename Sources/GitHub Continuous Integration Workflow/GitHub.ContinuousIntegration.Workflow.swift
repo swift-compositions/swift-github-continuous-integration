@@ -5,7 +5,7 @@ import GitHub_Standard
 // the validator contract: reading a GitHub Actions workflow file into a
 // typed value. Rule predicates over that value belong to `GitHub.ContinuousIntegration.Validation`;
 // subject/event/plan/aggregate semantics stay with the generic contract
-// (swift-foundations/swift-continuous-integration, `ContinuousIntegration`).
+// (swift-compositions/swift-continuous-integration, `ContinuousIntegration`).
 extension GitHub.ContinuousIntegration {
     public enum Workflow {}
 }
