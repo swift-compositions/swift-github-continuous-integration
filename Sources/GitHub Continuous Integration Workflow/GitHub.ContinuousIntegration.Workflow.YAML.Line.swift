@@ -94,7 +94,7 @@ extension GitHub.ContinuousIntegration.Workflow.YAML {
         static func splitKey(_ content: String) -> (key: String, value: String)? {
             var quote: Character?
             var depth = 0
-            let characters = Array(content)
+            let characters: [Character] = Array(content)
             for index in characters.indices {
                 let character = characters[index]
                 if let open = quote {

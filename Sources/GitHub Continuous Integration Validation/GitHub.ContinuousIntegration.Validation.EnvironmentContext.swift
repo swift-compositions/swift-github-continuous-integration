@@ -154,9 +154,9 @@ extension String {
     /// and word membership follow the retired regex's classes so the
     /// corpus's spacing variants resolve identically.
     fileprivate var referencesEnvironmentContext: Bool {
-        let characters = Array(self)
-        let opening = Array("${{")
-        let keyword = Array("env.")
+        let characters: [Character] = Array(self)
+        let opening: [Character] = Array("${{" as String)
+        let keyword: [Character] = Array("env." as String)
         var index = 0
         while index + opening.count <= characters.count {
             guard Array(characters[index..<(index + opening.count)]) == opening else {

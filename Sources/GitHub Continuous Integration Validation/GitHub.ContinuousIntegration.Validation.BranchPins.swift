@@ -215,8 +215,8 @@ extension GitHub.ContinuousIntegration.Validation {
         /// unterminated call runs to end of file: a malformed manifest is
         /// not this validator's finding to make.
         static func packageCalls(in code: String) -> [String] {
-            let characters = Array(code)
-            let token = Array(".package")
+            let characters: [Character] = Array(code)
+            let token: [Character] = Array(".package" as String)
             var calls: [String] = []
             var start = 0
             while start + token.count <= characters.count {
@@ -291,7 +291,7 @@ extension GitHub.ContinuousIntegration.Validation {
         /// The double-quoted value that follows `label` — `url: "…"`,
         /// `branch: "…"` — allowing any run of whitespace between them.
         static func quotedValue(in text: String, afterLabel label: String) -> String? {
-            let characters = Array(text)
+            let characters: [Character] = Array(text)
             let token = Array(label)
             var start = 0
             while start + token.count <= characters.count {
@@ -327,8 +327,8 @@ extension GitHub.ContinuousIntegration.Validation {
 
         /// The legacy requirement spelling, `.branch("x")`.
         static func legacyBranchValue(in text: String) -> String? {
-            let characters = Array(text)
-            let token = Array(".branch(")
+            let characters: [Character] = Array(text)
+            let token: [Character] = Array(".branch(" as String)
             var start = 0
             while start + token.count <= characters.count {
                 guard Array(characters[start..<(start + token.count)]) == token else {
